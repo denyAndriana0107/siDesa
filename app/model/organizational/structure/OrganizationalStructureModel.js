@@ -1,6 +1,8 @@
+const { ObjectId } = require("mongodb");
 const client = require("../../../config/db/Mongo");
 const StructureModel = function (params) {
-    this.name = params.name,
+    this._id = params._id,
+        this.name = params.name,
         this.RWId = params.RWId,
         this.jobs = params.jobs,
         this.photo = params.photo
@@ -23,7 +25,7 @@ StructureModel.read = async (RWId, result) => {
         if (allValues.length > 0) {
             return result(null, allValues);
         } else {
-            return resizeBy({ kind: "not_found" });
+            return result({ kind: "not_found" });
         }
     } catch (error) {
         return result(error.message);
@@ -35,6 +37,7 @@ StructureModel.insert = async (data, result) => {
     try {
         const db = await connection();
         const doc = {
+            "_id": ObjectId(data._id),
             "RWId": data.RWId,
             "person": [
                 {

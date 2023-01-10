@@ -14,7 +14,6 @@ module.exports = {
             if (allValues.length > 0) {
                 // cek role permission
                 if (allValues[0]["auth_users_group_id"] == process.env.SUPER_ADMIN) {
-                    await client.close();
                     next();
                 } else {
                     return res.status(403).send({
@@ -56,7 +55,6 @@ module.exports = {
                     message: `access denied`
                 });
             }
-
         } catch (error) {
             return res.status(500).send({
                 message: error.message
