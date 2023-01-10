@@ -15,7 +15,7 @@ UploadPhoto.upload = async (file, path, file_name) => {
         };
         bucket.upload(uploadParams, function (error, data) {
             if (error) {
-                reject(error.message);
+                reject("failed upload image");
             } if (data) {
                 resolve(data.Key);
             }
@@ -29,7 +29,7 @@ UploadPhoto.getUrl = async (file_path) => {
             Key: file_path,
         }, function (err, data) {
             if (err) {
-                reject(err);
+                reject("cant load url image");
             } if (data) {
                 resolve(data);
             }
