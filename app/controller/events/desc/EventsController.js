@@ -135,13 +135,13 @@ exports.readById = (req, res, next) => {
                     var final_result = [];
                     helper.getUrl(file_path).then((success) => {
                         final_result.push({
-                            _id: result[0][index]['_id'],
-                            event_name: result[0][index]['event_name'],
-                            category: result[0][index]['category'],
-                            description: result[0][index]['description'],
+                            _id: result[0]['_id'],
+                            event_name: result[0]['event_name'],
+                            category: result[0]['category'],
+                            description: result[0]['description'],
                             photo: success,
-                            createdAt: result[0][index]['createdAt'],
-                            updatedAt: result[0][index]['updatedAt']
+                            createdAt: result[0]['createdAt'],
+                            updatedAt: result[0]['updatedAt']
                         });
                         return res.status(200).send({
                             message: final_result
