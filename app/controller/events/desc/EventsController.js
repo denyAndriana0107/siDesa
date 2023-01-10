@@ -79,6 +79,45 @@ exports.read = (req, res, next) => {
         }
     });
 }
+exports.readAnalytits = (req, res, next) => {
+    AnalytictsModel.read(req.params.id, (error, result) => {
+        if (error) {
+            return res.status(500).send({
+                message: error
+            });
+        } else {
+            return res.status(200).send({
+                message: result
+            });
+        }
+    });
+}
+exports.add_like = (req, res, next) => {
+    AnalytictsModel.add_like(req.params.id, (error, result) => {
+        if (error) {
+            return res.status(500).send({
+                message: error
+            });
+        } else {
+            return res.status(200).send({
+                message: 'ok'
+            });
+        }
+    })
+}
+exports.add_share = (req, res, next) => {
+    AnalytictsModel.add_share(req.params.id, (error, result) => {
+        if (error) {
+            return res.status(500).send({
+                message: error
+            });
+        } else {
+            return res.status(200).send({
+                message: 'ok'
+            });
+        }
+    })
+}
 exports.readById = (req, res, next) => {
     EventsModel.readById(req.params.id, (error, result) => {
         if (error) {

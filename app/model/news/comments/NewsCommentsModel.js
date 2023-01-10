@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const client = require("../../../config/db/Mongo");
 const NewsCommentsmodel = function (params) {
     this.text = params.text,
@@ -35,7 +36,7 @@ NewsCommentsmodel.read = async (id_news, result) => {
 
         const limit = 20;
         const sort = { createdAt: -1 };
-        const query = { "newsId": id_news };
+        const query = { "newsId": ObjectId(id_news) };
         const cursor = collection.find(query).sort(sort).limit(limit);
         const allValues = await cursor.toArray();
 

@@ -19,6 +19,7 @@ module.exports = app => {
     router.get('/news/analyticts/:id_news', auth_middleware.isLoggedIn, dao.readNewsAnalytictsById);
 
     router.post('/news/insert', multer.single('file'), auth_middleware.isLoggedIn, permission_middleware.isSuperAdmin, dao.insertNews);
+    router.post('/news/add_like/:id_news', auth_middleware.isLoggedIn, dao.add_like);
 
     router.put('/news/update/:id_news', multer.single('file'), auth_middleware.isLoggedIn, permission_middleware.isSuperAdmin, dao.updateNews);
 
