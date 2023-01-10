@@ -9,6 +9,7 @@ module.exports = {
         const query = { "phone": `${req.user.phone}` };
         const cursor = collection.find(query);
         const allValues = await cursor.toArray();
+        console.log(allValues);
 
         // cek role permission
         if (allValues[0]["auth_users_group_id"] == process.env.SUPER_ADMIN) {
