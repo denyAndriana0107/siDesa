@@ -1,4 +1,4 @@
-const client = require("../../../config/db/Mongo");
+const client = require("../../../config/db/Mongo-dev");
 const StructureModel = function (params) {
     this.person = params.person,
         this.jobs = params.jobs

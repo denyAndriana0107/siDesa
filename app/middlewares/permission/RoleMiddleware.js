@@ -1,4 +1,4 @@
-const client = require("../../config/db/Mongo");
+const client = require("../../config/db/Mongo-dev");
 require("dotenv").config();
 module.exports = {
     isSuperAdmin: async (req, res, next) => {
@@ -14,6 +14,7 @@ module.exports = {
             if (allValues.length > 0) {
                 // cek role permission
                 if (allValues[0]["auth_users_group_id"] == process.env.SUPER_ADMIN) {
+                    await client.close();
                     next();
                 } else {
                     return res.status(403).send({
@@ -29,8 +30,6 @@ module.exports = {
             return res.status(500).send({
                 message: error.message
             });
-        } finally {
-            await client.close();
         }
     },
     isAdminRW: async (req, res, next) => {
@@ -62,8 +61,6 @@ module.exports = {
             return res.status(500).send({
                 message: error.message
             });
-        } finally {
-            await client.close();
         }
     },
     isWarga: async (req, res, next) => {
@@ -96,8 +93,6 @@ module.exports = {
             return res.status(500).send({
                 message: error.message
             });
-        } finally {
-            await client.close();
         }
 
     }

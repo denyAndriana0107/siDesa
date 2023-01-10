@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo");
+const client = require("../../../config/db/Mongo-dev");
 const bycrypts = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
