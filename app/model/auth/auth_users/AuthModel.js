@@ -30,7 +30,7 @@ AuthModel.signUp = async (data, result) => {
                 "RWId": data.RWId,
                 "createdAt": new Date(),
                 "last_login": null,
-                "auth_users_group_id": ObjectId(process.env.SUPER_ADMIN)
+                "auth_users_group_id": ObjectId(process.env.ADMIN_RW)
             }
             await collection.insertOne(user);
             return result(null, user.RWId);
