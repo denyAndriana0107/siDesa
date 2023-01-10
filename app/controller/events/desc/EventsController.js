@@ -131,18 +131,17 @@ exports.readById = (req, res, next) => {
                         message: error
                     });
                 } else {
-                    console.log("ini photo" + result[0]['photo']);
                     let file_path = result[0]['photo'];
                     var final_result = [];
                     helper.getUrl(file_path).then((success) => {
                         final_result.push({
-                            _id: result[index]['_id'],
-                            event_name: result[index]['event_name'],
-                            category: result[index]['category'],
-                            description: result[index]['description'],
+                            _id: result[0][index]['_id'],
+                            event_name: result[0][index]['event_name'],
+                            category: result[0][index]['category'],
+                            description: result[0][index]['description'],
                             photo: success,
-                            createdAt: result[index]['createdAt'],
-                            updatedAt: result[index]['updatedAt']
+                            createdAt: result[0][index]['createdAt'],
+                            updatedAt: result[0][index]['updatedAt']
                         });
                         return res.status(200).send({
                             message: final_result
