@@ -1,6 +1,15 @@
 module.exports = app => {
     const express = require("express");
     const router = express.Router();
+    const Multer = require("multer");
+
+    const multer = Multer({
+        storage: Multer.memoryStorage(),
+        limits: {
+            fileSize: 5 * 1024 * 1024 // no larger than 5mb, you can change as needed.
+        }
+    });
+
 
     const dao = require("../../../controller/organizational/structure/StructureController");
 
@@ -8,5 +17,6 @@ module.exports = app => {
     const permission_middlewarer = require("../../../middlewares/permission/RoleMiddleware");
 
     router.get('/organizational/structure', auth_middleware.isLoggedIn, dao.read);
+    router.post('/organizational/structure', multer.single('file'), auth_middleware.isLoggedIn, permission_middlewarer.isAdminRW,)
     app.use('/api/', router);
 }
