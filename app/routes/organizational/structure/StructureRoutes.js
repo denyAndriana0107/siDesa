@@ -17,6 +17,6 @@ module.exports = app => {
     const permission_middlewarer = require("../../../middlewares/permission/RoleMiddleware");
 
     router.get('/organizational/structure', auth_middleware.isLoggedIn, dao.read);
-    router.post('/organizational/structure', multer.single('file'), auth_middleware.isLoggedIn, permission_middlewarer.isAdminRW,)
+    router.post('/organizational/structure', multer.single('file'), auth_middleware.isLoggedIn, permission_middlewarer.isAdminRW, dao.insert);
     app.use('/api/', router);
 }
