@@ -55,4 +55,39 @@ StructureModel.insert = async (data, result) => {
         await client.close();
     }
 }
+StructureModel.add_person = async (data, result) => {
+    try {
+        const db = await connection();
+        const filter = {
+            "_id": ObjectId(data._id)
+        }
+        const cursor = db.find(filter);
+        const allValues = await cursor.toArray();
+        if (allValues.length > 0) {
+            var old_doc = [];
+            for (let index = 0; index < allValues[0]['person'].length; index++) {
+                old_doc.push(allValues[0]['person'][index]);
+            }
+            var new_doc = [];
+            new_doc.push(old_doc);
+            new_doc.push({
+                name: data.name,
+                photo: data.photo
+            })
+            const doc = {
+                $set: {
+                    person: new_doc
+                }
+            }
+            const final_result = await db.updateOne(filter, doc);
+            return result(null);
+        } else {
+            return result({ kind: "not_found" });
+        }
+    } catch (error) {
+        return result(error.message);
+    } finally {
+        await client.close();
+    }
+}
 module.exports = StructureModel;

@@ -46,6 +46,7 @@ EventsModel.readById = async (id, result) => {
         }
         const cursor = await db.find(filter);
         const final_result = await cursor.toArray();
+        console.log(final_result);
         if (final_result.length > 0) {
             return result(null, final_result)
         } else {

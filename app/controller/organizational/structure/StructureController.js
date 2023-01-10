@@ -50,3 +50,6 @@ exports.insert = (req, res, next) => {
         });
     });
 }
+exports.add_person = (req, res, next) => {
+
+}
