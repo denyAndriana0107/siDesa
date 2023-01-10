@@ -2,7 +2,7 @@ const StructureModel = require("../../../model/organizational/structure/Organiza
 const helper = require("../../../helper/upload/UploadPhoto");
 const { ObjectId } = require("mongodb");
 exports.read = (req, res, next) => {
-    StructureModel.read((error, result) => {
+    StructureModel.read(req.user.RWId, (error, result) => {
         if (error) {
             if (error.kind === "not_found") {
                 return res.status(404).send({
