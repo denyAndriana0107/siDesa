@@ -30,6 +30,7 @@ exports.insert = (req, res, next) => {
             "_id": _id,
             "RWId": RWId,
             "name": req.body.name,
+            "photo": success,
             "jobs": req.body.jobs
         });
         StructureModel.insert(data, (error, result) => {
