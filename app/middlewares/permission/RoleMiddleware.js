@@ -11,9 +11,15 @@ module.exports = {
             const cursor = collection.find(query);
             const allValues = await cursor.toArray();
 
-            // cek role permission
-            if (allValues[0]["auth_users_group_id"] == process.env.SUPER_ADMIN) {
-                next();
+            if (allValues.length > 0) {
+                // cek role permission
+                if (allValues[0]["auth_users_group_id"] == process.env.SUPER_ADMIN) {
+                    next();
+                } else {
+                    return res.status(403).send({
+                        message: `access denied`
+                    });
+                }
             } else {
                 return res.status(403).send({
                     message: `access denied`
@@ -37,14 +43,21 @@ module.exports = {
             const cursor = collection.find(query);
             const allValues = await cursor.toArray();
 
-            // cek role permission
-            if (allValues[0]["auth_users_group_id"] == process.env.ADMIN_RW) {
-                next();
+            if (allValues.length > 0) {
+                // cek role permission
+                if (allValues[0]["auth_users_group_id"] == process.env.ADMIN_RW) {
+                    next();
+                } else {
+                    return res.status(403).send({
+                        message: `access denied`
+                    });
+                }
             } else {
                 return res.status(403).send({
                     message: `access denied`
                 });
             }
+
         } catch (error) {
             return res.status(500).send({
                 message: error.message
@@ -63,14 +76,22 @@ module.exports = {
             const cursor = collection.find(query);
             const allValues = await cursor.toArray();
 
-            // cek role permission
-            if (allValues[0]["auth_users_group_id"] == process.env.WARGA) {
-                next();
+            if (allValues.length > 0) {
+                // cek role permission
+                if (allValues[0]["auth_users_group_id"] == process.env.WARGA) {
+                    next();
+                } else {
+                    return res.status(403).send({
+                        message: `access denied`
+                    });
+                }
             } else {
                 return res.status(403).send({
                     message: `access denied`
                 });
             }
+
+
         } catch (error) {
             return res.status(500).send({
                 message: error.message
