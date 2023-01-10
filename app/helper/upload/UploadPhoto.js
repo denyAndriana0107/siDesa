@@ -29,7 +29,7 @@ UploadPhoto.getUrl = async (file_path) => {
             Key: file_path,
         }, function (err, data) {
             if (err) {
-                reject(err.message);
+                reject(err);
             } if (data) {
                 resolve(data);
             }
