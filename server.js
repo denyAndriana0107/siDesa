@@ -35,6 +35,7 @@ require("./app/routes/organizational/facilities/FacilitiesRoutes")(app);
 
 // event organizational
 require("./app/routes/events/desc/EventRoutes")(app);
+require("./app/routes/events/comments/EventRoutes")(app);
 
 // users
 require("./app/routes/users/profile/ProfileRoutes")(app);

@@ -61,7 +61,7 @@ AnalytictsModel.add_like = async (id_event, result) => {
             const db = await connection();
             const doc = {
                 $set: {
-                    views_count: allValues[0]['likes_count'] + 1
+                    likes_count: allValues[0]['likes_count'] + 1
                 }
             }
             await db.updateOne(filter, doc);
@@ -104,11 +104,29 @@ AnalytictsModel.add_view = async (id_event, result) => {
 }
 AnalytictsModel.add_share = async (id_event, result) => {
     try {
+        const db = await connection();
+        const filter = {
+            "eventId": ObjectId(id_event)
+        };
+        const cursor = db.find(filter);
+        const allValues = await cursor.toArray();
 
+        if (allValues.length > 0) {
+            const db = await connection();
+            const doc = {
+                $set: {
+                    shares_count: allValues[0]['views_count'] + 1
+                }
+            }
+            await db.updateOne(filter, doc);
+            return result(null);
+        } else {
+            return result({ kind: "not_found" });
+        }
     } catch (error) {
-
+        return result(error.message);
     } finally {
-
+        await client.close();
     }
 }
 AnalytictsModel.delete = async (id_event, result) => {

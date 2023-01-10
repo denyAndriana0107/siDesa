@@ -1,7 +1,9 @@
 const client = require("../../../config/db/Mongo");
 const StructureModel = function (params) {
-    this.person = params.person,
-        this.jobs = params.jobs
+    this.name = params.name,
+        this.RWId = params.RWId,
+        this.jobs = params.jobs,
+        this.photo = params.photo
 }
 async function connection() {
     await client.connect();
@@ -9,10 +11,12 @@ async function connection() {
     const collection = database.collection('organizational_structure');
     return collection;
 }
-StructureModel.read = async (result) => {
+StructureModel.read = async (RWId, result) => {
     try {
         const db = await connection();
-        const query = {}
+        const query = {
+            "RWId": RWId
+        }
         const cursor = await db.find(query);
         const allValues = await cursor.toArray();
 
@@ -31,8 +35,14 @@ StructureModel.insert = async (data, result) => {
     try {
         const db = await connection();
         const doc = {
-            "person": data.person,
-            "jobs": data.jobs
+            "RWId": data.RWId,
+            "person": [
+                {
+                    "name": data.name,
+                    "photo": data.photo
+                }
+            ],
+            "jobs": data.jobs,
         }
         await db.insertOne(doc);
         return result(null);

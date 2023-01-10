@@ -3,7 +3,7 @@ module.exports = app => {
     const router = express.Router();
 
 
-    const dao = require("../../../controller/news/comments/NewsController");
+    const dao = require("../../../controller/events/comments/EventsController");
     const auth_middleware = require("../../../middlewares/auth/AuthMiddleware");
     const permission_middleware = require("../../../middlewares/permission/RoleMiddleware");
 
