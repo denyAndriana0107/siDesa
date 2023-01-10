@@ -131,7 +131,8 @@ exports.readById = (req, res, next) => {
                         message: error
                     });
                 } else {
-                    let file_path = result2[0]['photo'];
+                    console.log("ini photo" + result[0]['photo']);
+                    let file_path = result[0]['photo'];
                     var final_result = [];
                     helper.getUrl(file_path).then((success) => {
                         final_result.push({
