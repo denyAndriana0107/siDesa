@@ -7,7 +7,7 @@ module.exports = app => {
     const auth_middleware = require("../../../middlewares/auth/AuthMiddleware");
     const permission_middleware = require("../../../middlewares/permission/RoleMiddleware");
 
-    router.get('/news/comments/:id_news', auth_middleware.isLoggedIn, dao.readComments);
-    router.post('/news/comments/insert/:id_news', auth_middleware.isLoggedIn, dao.insertComments);
+    router.get('/event/comments/:id_news', auth_middleware.isLoggedIn, dao.readComments);
+    router.post('/event/comments/insert/:id_news', auth_middleware.isLoggedIn, dao.insertComments);
     app.use('/api/', router);
 }
