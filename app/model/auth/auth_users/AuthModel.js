@@ -43,6 +43,37 @@ AuthModel.signUp = async (data, result) => {
         await client.close();
     }
 }
+AuthModel.signUpWarga = async (data, result) => {
+    try {
+        await client.connect();
+        const database = client.db('siDesa');
+        const collection = database.collection('auth_users');
+
+        const query = { "phone": `${data.phone}` };
+        const cursor = collection.find(query);
+        const allValues = await cursor.toArray();
+
+        // cek user exist
+        if (!allValues.length) {
+            const user = {
+                "phone": data.phone,
+                "password": data.password,
+                "RWId": data.RWId,
+                "createdAt": new Date(),
+                "last_login": null,
+                "auth_users_group_id": ObjectId(process.env.ADMIN_RW)
+            }
+            await collection.insertOne(user);
+            return result(null);
+        } else {
+            return result({ kind: "data_conflict" }, null);
+        }
+    } catch (error) {
+        return result(error.message);
+    } finally {
+        await client.close();
+    }
+}
 
 AuthModel.signIn = async (data, result) => {
     try {
