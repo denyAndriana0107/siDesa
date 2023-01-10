@@ -1,0 +1,41 @@
+{
+  "name": "v2.0",
+  "version": "1.0.0",
+  "description": "sidesa API",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/denyAndriana0107/siDesa.git"
+  },
+  "keywords": [
+    "siDesa",
+    "API"
+  ],
+  "author": "Enkei0107",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/denyAndriana0107/siDesa/issues"
+  },
+  "homepage": "https://github.com/denyAndriana0107/siDesa#readme",
+  "dependencies": {
+    "aws-sdk": "^2.1285.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.2",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.0",
+    "mongodb": "4.13",
+    "mongoose": "^6.8.1",
+    "multer": "^1.4.5-lts.1",
+    "node-schedule": "^2.1.0",
+    "nodemon": "^2.0.19",
+    "tunnel-ssh": "^5.0.1",
+    "uuid": "^9.0.0"
+  }
+}
