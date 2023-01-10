@@ -148,7 +148,7 @@ exports.readById = (req, res, next) => {
                         });
                     }).catch((error) => {
                         return res.status(500).send({
-                            message: final_result
+                            message: error
                         });
                     });
                 }
