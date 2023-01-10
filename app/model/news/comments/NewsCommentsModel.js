@@ -1,4 +1,4 @@
-const client = require("../../../config/db/Mongo-dev");
+const client = require("../../../config/db/Mongo");
 const NewsCommentsmodel = function (params) {
     this.text = params.text,
         this.createdAt = params.createdAt,
