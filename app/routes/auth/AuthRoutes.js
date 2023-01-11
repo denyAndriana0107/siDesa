@@ -8,6 +8,6 @@ module.exports = app => {
 
     router.post('/signin', dao.signIn);
     router.post('/signup', auth_middleware.isLoggedIn, permission_middleware.isSuperAdmin, dao.signUp);
-
+    router.post('/signin/v2', dao.signIn2);
     app.use('/auth/', router)
 }

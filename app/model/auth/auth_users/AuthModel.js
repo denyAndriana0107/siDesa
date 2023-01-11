@@ -49,24 +49,34 @@ AuthModel.signUpWarga = async (data, result) => {
         const database = client.db('siDesa');
         const collection = database.collection('auth_users');
 
-        const query = { "phone": `${data.phone}` };
+        const query = { "RWId": `${data.password}` };
         const cursor = collection.find(query);
         const allValues = await cursor.toArray();
 
-        // cek user exist
-        if (!allValues.length) {
-            const user = {
-                "phone": data.phone,
-                "password": data.password,
-                "RWId": data.RWId,
-                "createdAt": new Date(),
-                "last_login": null,
-                "auth_users_group_id": ObjectId(process.env.ADMIN_RW)
+        // cek RWID exist
+        if (allValues.length > 0) {
+            const query = {
+                "phone": data.phone
             }
-            await collection.insertOne(user);
-            return result(null);
+            const cursor = collection.find(query);
+            const allValues2 = await cursor.toArray();
+            // cek users exist
+            if (allValues2.length > 0) {
+                return result({ kind: "data_conflict" }, null);
+            } else {
+                const user = {
+                    "phone": data.phone,
+                    "password": data.password,
+                    "RWId": data.password,
+                    "createdAt": new Date(),
+                    "last_login": null,
+                    "auth_users_group_id": ObjectId(process.env.WARGA)
+                }
+                await collection.insertOne(user);
+                return result(null);
+            }
         } else {
-            return result({ kind: "data_conflict" }, null);
+            return result({ kind: "RWId_not_found" }, null);
         }
     } catch (error) {
         return result(error.message);

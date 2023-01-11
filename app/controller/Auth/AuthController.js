@@ -42,3 +42,42 @@ exports.signIn = (req, res, next) => {
         }
     });
 }
+
+exports.signIn2 = (req, res, next) => {
+    const data = new AuthModel({
+        "phone": req.body.phone.toLowerCase(),
+        "password": req.body.password
+    });
+    AuthModel.signIn(data, (error, result) => {
+        if (error) {
+            if (error.kind === "user_not_found") {
+                AuthModel.signUpWarga(data, (error, result2) => {
+                    if (error) {
+                        return res.status(500).send({
+                            message: error
+                        });
+                    } else {
+                        AuthModel.signIn(data, (error, result3) => {
+                            if (error) {
+                                return res.status(500).send({
+                                    message: error
+                                });
+                            } else {
+                                return res.status(202).send({
+                                    message: result3
+                                });
+                            }
+                        });
+                    }
+                })
+            }
+            return res.status(500).send({
+                message: error
+            });
+        } else {
+            return res.status(200).send({
+                message: result
+            });
+        }
+    });
+}
