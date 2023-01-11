@@ -58,6 +58,9 @@ AuthModel.signUpWarga = async (data, result) => {
             const query = {
                 "phone": data.phone
             }
+            await client.connect();
+            const database = client.db('siDesa');
+            const collection = database.collection('auth_users');
             const cursor = collection.find(query);
             const allValues2 = await cursor.toArray();
             // cek users exist
@@ -72,6 +75,9 @@ AuthModel.signUpWarga = async (data, result) => {
                     "last_login": null,
                     "auth_users_group_id": ObjectId(process.env.WARGA)
                 }
+                await client.connect();
+                const database = client.db('siDesa');
+                const collection = database.collection('auth_users');
                 await collection.insertOne(user);
                 return result(null);
             }
