@@ -1,4 +1,6 @@
 const AuthModel = require("../../model/auth/auth_users/AuthModel");
+const OTP = require("../../model/auth/otp/AuthModel");
+const helper = require("../../helper/otp/OTP");
 const bycrypts = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { ObjectId } = require("mongodb");
@@ -45,39 +47,56 @@ exports.signIn = (req, res, next) => {
 
 exports.signIn2 = (req, res, next) => {
     const data = new AuthModel({
+        "_id": new ObjectId(),
         "phone": req.body.phone.toLowerCase(),
         "password": req.body.password
     });
-    AuthModel.signIn(data, (error, result) => {
+    AuthModel.signUpWarga(data, (error, result) => {
         if (error) {
-            if (error.kind === "user_not_found") {
-                AuthModel.signUpWarga(data, (error, result2) => {
+            if (error.kind === "data_conflict") {
+                AuthModel.signIn(data, (error, final_result) => {
                     if (error) {
                         return res.status(500).send({
                             message: error
                         });
                     } else {
-                        AuthModel.signIn(data, (error, result3) => {
-                            if (error) {
-                                return res.status(500).send({
-                                    message: error
-                                });
-                            } else {
-                                return res.status(202).send({
-                                    message: result3
-                                });
-                            }
+                        return res.status(202).send({
+                            message: final_result
                         });
                     }
-                })
+                });
+            } else {
+                return res.status(500).send({
+                    message: error
+                });
             }
-            return res.status(500).send({
-                message: error
-            });
         } else {
-            return res.status(200).send({
-                message: result
+            let otp = helper.generate();
+            const data_otp = {
+                "_id": data._id,
+                "otp": otp
+            }
+            OTP.insert(data_otp, (error, result) => {
+                if (error) {
+                    return res.status(500).send({
+                        message: error
+                    });
+                } else {
+                    AuthModel.signIn(data, (error, final_result) => {
+                        if (error) {
+                            return res.status(500).send({
+                                message: error
+                            });
+                        } else {
+                            return res.status(202).send({
+                                message: final_result,
+                                otp: otp
+                            });
+                        }
+                    });
+                }
             });
+
         }
     });
 }

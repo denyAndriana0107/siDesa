@@ -1,15 +1,23 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo");
+const client = require("../../../config/db/Mongo-dev");
 const bycrypts = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const AuthModel = function (data) {
-    this.phone = data.phone,
+    this._id = data._id,
+        this.phone = data.phone,
         this.password = data.password,
         this.RWId = data.RWId,
         this.createdAt = data.createdAt,
         this.last_login = data.last_login
+}
+
+async function connection() {
+    await client.connect();
+    const database = client.db('siDesa');
+    const collection = database.collection('auth_users');
+    return collection;
 }
 
 AuthModel.signUp = async (data, result) => {
@@ -45,10 +53,7 @@ AuthModel.signUp = async (data, result) => {
 }
 AuthModel.signUpWarga = async (data, result) => {
     try {
-        await client.connect();
-        const database = client.db('siDesa');
-        const collection = database.collection('auth_users');
-
+        const collection = await connection();
         const query = { "RWId": `${data.password}` };
         const cursor = collection.find(query);
         const allValues = await cursor.toArray();
@@ -58,26 +63,24 @@ AuthModel.signUpWarga = async (data, result) => {
             const query = {
                 "phone": data.phone
             }
-            await client.connect();
-            const database = client.db('siDesa');
-            const collection = database.collection('auth_users');
             const cursor = collection.find(query);
             const allValues2 = await cursor.toArray();
             // cek users exist
             if (allValues2.length > 0) {
-                return result({ kind: "data_conflict" }, null);
+                return result({
+                    kind: "data_conflict"
+                }, null);
             } else {
+                const password = bycrypts.hashSync(data.password);
                 const user = {
+                    "_id": ObjectId(data._id),
                     "phone": data.phone,
-                    "password": data.password,
+                    "password": password,
                     "RWId": data.password,
                     "createdAt": new Date(),
                     "last_login": null,
                     "auth_users_group_id": ObjectId(process.env.WARGA)
                 }
-                await client.connect();
-                const database = client.db('siDesa');
-                const collection = database.collection('auth_users');
                 await collection.insertOne(user);
                 return result(null);
             }
@@ -86,8 +89,6 @@ AuthModel.signUpWarga = async (data, result) => {
         }
     } catch (error) {
         return result(error.message);
-    } finally {
-        await client.close();
     }
 }
 
