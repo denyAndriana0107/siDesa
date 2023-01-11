@@ -1,4 +1,4 @@
-const client = require("../../../config/db/Mongo-dev");
+const client = require("../../../config/db/Mongo");
 const { ObjectId } = require("mongodb");
 const AnalytictsModel = function (params) {
     this.eventId = params.eventId,

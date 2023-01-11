@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo-dev");
+const client = require("../../../config/db/Mongo");
 const NewsModel = function (data) {
     this._id = data._id,
         this.title = data.title,

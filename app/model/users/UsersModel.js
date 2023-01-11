@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../config/db/Mongo-dev");
+const client = require("../../config/db/Mongo");
 const UsersModel = function (params) {
     this.name = params.name,
         this.photo = params.photo,

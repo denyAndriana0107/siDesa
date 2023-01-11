@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo-dev");
+const client = require("../../../config/db/Mongo");
 const ProfileModel = function (params) {
     this._id = params._id,
         this.RWId = params.RWId,
