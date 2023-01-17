@@ -6,8 +6,9 @@ module.exports = app => {
     const auth_middleware = require("../../middlewares/auth/AuthMiddleware");
     const permission_middleware = require("../../middlewares/permission/RoleMiddleware");
 
-    router.post('/signin', dao.signIn);
-    router.post('/signup', auth_middleware.isLoggedIn, permission_middleware.isSuperAdmin, dao.signUp);
-    router.post('/signin/v2', dao.signIn2);
+    router.post('/signup', auth_middleware.isLoggedIn, auth_middleware.isValidated, permission_middleware.isSuperAdmin, dao.signUp);
+    router.post('/signin', dao.signIn2);
+    router.post('/signout', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.signOut);
+    router.post('/OTP/validate', auth_middleware.isLoggedIn, dao.validateOTP);
     app.use('/auth/', router)
 }

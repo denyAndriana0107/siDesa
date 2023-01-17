@@ -1,6 +1,5 @@
 const bucket = require("../../config/storage/Bucket");
 const UploadPhoto = function (params) {
-
 }
 UploadPhoto.upload = async (file, path, file_name) => {
     return new Promise((resolve, reject) => {

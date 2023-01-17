@@ -15,10 +15,10 @@ module.exports = app => {
     const permission_middlewares = require("../../../middlewares/permission/RoleMiddleware");
     const file_middlewares = require("../../../middlewares/file/FileMiddleware");
 
-    router.get('/users/profile', auth_middleware.isLoggedIn, dao.read);
-    router.post('/users/profile/insert', auth_middleware.isLoggedIn, dao.insert);
-    router.post('/users/profile/upload_photo', multer.single('file'), auth_middleware.isLoggedIn, file_middlewares.isImage, dao.uploadPhoto);
-    router.put('/users/profile/update', auth_middleware.isLoggedIn, dao.update);
-    router.delete('/users/profile/delete', auth_middleware.isLoggedIn, dao.delete);
+    router.get('/users/profile', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.read);
+    router.post('/users/profile/insert', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.insert);
+    router.post('/users/profile/upload_photo', multer.single('file'), auth_middleware.isValidated, auth_middleware.isLoggedIn, file_middlewares.isImage, dao.uploadPhoto);
+    router.put('/users/profile/update', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.update);
+    router.delete('/users/profile/delete', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.delete);
     app.use('/api/', router);
 }

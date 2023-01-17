@@ -13,11 +13,11 @@ module.exports = app => {
     const auth_middleware = require("../../../middlewares/auth/AuthMiddleware");
     const permission_middlewarer = require("../../../middlewares/permission/RoleMiddleware");
 
-    router.get('/organizational/facilities', auth_middleware.isLoggedIn, dao.read);
+    router.get('/organizational/facilities', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.read);
 
-    router.post('/organizational/facilities/insert', multer.single('file'), auth_middleware.isLoggedIn, permission_middlewarer.isAdminRW, dao.insert);
-    router.put('/organizational/facilities/update/:id', multer.single('file'), auth_middleware.isLoggedIn, permission_middlewarer.isAdminRW, dao.update);
-    router.delete('/organizational/facilities/delete/:id', auth_middleware.isLoggedIn, permission_middlewarer.isAdminRW, dao.delete);
+    router.post('/organizational/facilities/insert', multer.single('file'), auth_middleware.isLoggedIn, auth_middleware.isValidated, permission_middlewarer.isAdminRW, dao.insert);
+    router.put('/organizational/facilities/update/:id', multer.single('file'), auth_middleware.isLoggedIn, auth_middleware.isValidated, permission_middlewarer.isAdminRW, dao.update);
+    router.delete('/organizational/facilities/delete/:id', auth_middleware.isLoggedIn, permission_middlewarer.isAdminRW, auth_middleware.isValidated, dao.delete);
 
     app.use('/api/', router);
 }

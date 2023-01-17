@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+const client = require("../../config/db/Mongo");
+const { ObjectId } = require("mongodb");
 module.exports = {
     isLoggedIn: (req, res, next) => {
         if (!req.headers.authorization) {
@@ -18,6 +20,33 @@ module.exports = {
             return res.status(400).send({
                 message: "session anda telah berakhir",
             });
+        }
+    },
+    isValidated: async (req, res, next) => {
+        try {
+            await client.connect();
+            const database = client.db('siDesa');
+            const collection = database.collection('auth_users_otp');
+            const query = {
+                "auth_users_id": ObjectId(req.user.userId),
+                "validated": true
+            }
+            const cursor = await collection.find(query);
+            const result = await cursor.toArray();
+
+            // if validated
+            if (result.length > 0) {
+                next();
+            } else {
+                return res.status(400).send({
+                    message: "OTP anda tidak tervalidasi",
+                });
+            }
+        } catch (error) {
+            return res.status(400).send({
+                message: "OTP anda tidak tervalidasi",
+            });
+
         }
     }
 }

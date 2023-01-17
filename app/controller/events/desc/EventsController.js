@@ -208,30 +208,44 @@ exports.update = (req, res, next) => {
     }
 }
 exports.delete = (req, res, next) => {
-    EventsModel.delete(req.params.id, (error, result) => {
+    EventsModel.readById(req.params.id, (error, result) => {
         if (error) {
-            if (error.kind === "not_found") {
-                return res.status(404).send({
-                    message: 'not_found'
-                });
-            }
-            return res.status(500).send({
-                message: error
+            return res.status(404).send({
+                message: 'not_found'
             });
         } else {
-            AnalytictsModel.delete(req.params.id, (error, result) => {
-                if (error) {
-                    if (error.kind === "not_found") {
-                        return res.status(404).send({
-                            message: 'not_found'
+            helper.delete(result[0]['photo']).then((success) => {
+                EventsModel.delete(req.params.id, (error, result) => {
+                    if (error) {
+                        if (error.kind === "not_found") {
+                            return res.status(404).send({
+                                message: 'not_found'
+                            });
+                        }
+                        return res.status(500).send({
+                            message: error
+                        });
+                    } else {
+                        AnalytictsModel.delete(req.params.id, (error, result2) => {
+                            if (error) {
+                                if (error.kind === "not_found") {
+                                    return res.status(404).send({
+                                        message: 'not_found'
+                                    });
+                                }
+                            } else {
+                                return res.status(200).send({
+                                    message: result
+                                });
+                            }
                         });
                     }
-                } else {
-                    return res.status(200).send({
-                        message: 'ok'
-                    });
-                }
+                })
+            }).catch((error) => {
+                return res.status(500).send({
+                    message: error
+                });
             });
         }
-    })
+    });
 }

@@ -15,15 +15,15 @@ module.exports = app => {
     const permission_middlewares = require("../../../middlewares/permission/RoleMiddleware");
     const file_middlewares = require("../../../middlewares/file/FileMiddleware");
 
-    router.get('/event', auth_middleware.isLoggedIn, dao.read);
-    router.get('/event/:id', auth_middleware.isLoggedIn, dao.readById);
-    router.get('/event/analyticts/:id', auth_middleware.isLoggedIn, dao.readAnalytits);
+    router.get('/event', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.read);
+    router.get('/event/:id', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.readById);
+    router.get('/event/analyticts/:id', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.readAnalytits);
 
-    router.post('/event/insert', multer.single('file'), file_middlewares.isImage, auth_middleware.isLoggedIn, file_middlewares.isImage, permission_middlewares.isAdminRW, dao.insert);
-    router.post('/event/add_like/:id', auth_middleware.isLoggedIn, dao.add_like);
-    router.post('/event/add_share/:id', auth_middleware.isLoggedIn, dao.add_share);
+    router.post('/event/insert', multer.single('file'), file_middlewares.isImage, auth_middleware.isLoggedIn, auth_middleware.isValidated, file_middlewares.isImage, permission_middlewares.isAdminRW, dao.insert);
+    router.post('/event/add_like/:id', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.add_like);
+    router.post('/event/add_share/:id', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.add_share);
 
-    router.put('/event/update/:id', multer.single('file'), file_middlewares.isImage, auth_middleware.isLoggedIn, permission_middlewares.isAdminRW, dao.update);
-    router.delete('/event/delete/:id', auth_middleware.isLoggedIn, permission_middlewares.isAdminRW, dao.delete);
+    router.put('/event/update/:id', multer.single('file'), file_middlewares.isImage, auth_middleware.isLoggedIn, auth_middleware.isValidated, permission_middlewares.isAdminRW, dao.update);
+    router.delete('/event/delete/:id', auth_middleware.isLoggedIn, permission_middlewares.isAdminRW, auth_middleware.isValidated, dao.delete);
     app.use('/api/', router);
 }

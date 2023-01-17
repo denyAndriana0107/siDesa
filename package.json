@@ -38,6 +38,8 @@
     "nodemon": "^2.0.19",
     "speakeasy": "^2.0.0",
     "tunnel-ssh": "^5.0.1",
-    "uuid": "^9.0.0"
+    "twilio": "^3.84.1",
+    "uuid": "^9.0.0",
+    "whatsapp-api-js": "^0.8.1"
   }
 }
