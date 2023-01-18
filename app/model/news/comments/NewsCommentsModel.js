@@ -13,10 +13,11 @@ class NewsCommentsmodel {
         try {
             const db = await connection();
             const query = {
-                "newsId": data.newsId,
+                "newsId": ObjectId(data.newsId),
             }
             const find = db.find(query);
             const final_result = await find.toArray();
+            console.log(final_result);
             if (final_result.length > 0) {
                 const doc = {
                     "text": data.text,
