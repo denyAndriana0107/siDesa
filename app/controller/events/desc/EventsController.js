@@ -1,5 +1,6 @@
 const EventsModel = require("../../../model/events/desc/EventsModel");
 const AnalytictsModel = require("../../../model/events/analyticts/EventsModel");
+const UsersLogsLike = require("../../../model/users/logs/LogsLikeEvent");
 const helper = require("../../../helper/upload/UploadPhoto");
 const { ObjectId } = require("mongodb");
 
@@ -93,17 +94,46 @@ exports.readAnalytits = (req, res, next) => {
     });
 }
 exports.add_like = (req, res, next) => {
-    AnalytictsModel.add_like(req.params.id, (error, result) => {
+    const data = new UsersLogsLike({
+        "auth_users_id": ObjectId(req.user.userId),
+        "eventId": ObjectId(req.params.id)
+    });
+    UsersLogsLike.find(data, (error, result) => {
         if (error) {
             return res.status(500).send({
                 message: error
             });
         } else {
-            return res.status(200).send({
-                message: 'ok'
+            const data_add_like = new AnalytictsModel({
+                "eventId": req.params.id,
+                "liked": result
             });
+            AnalytictsModel.add_like(data_add_like, (error, result2) => {
+                if (error) {
+                    return res.status(500).send({
+                        message: error
+                    });
+                } else {
+                    const data_users_logs_like = new UsersLogsLike({
+                        "eventId": req.params.id,
+                        "auth_users_id": ObjectId(req.user.userId)
+                    });
+                    UsersLogsLike.InsertOrDelete(data_users_logs_like, (error, result3) => {
+                        if (error) {
+                            return res.status(500).send({
+                                message: error
+                            });
+                        } else {
+                            return res.status(200).send({
+                                message: 'ok'
+                            });
+                        }
+                    })
+                }
+            })
         }
     })
+
 }
 exports.add_share = (req, res, next) => {
     AnalytictsModel.add_share(req.params.id, (error, result) => {

@@ -4,14 +4,14 @@ class LogsLikeEvent {
     constructor(params) {
         this._id = params._id
         this.auth_users_id = params.auth_users_id,
-            this.news_id = params.news_id
+            this.eventId = params.eventId
     }
     static async find(data, result) {
         try {
             const db = await connection();
             const query = {
                 "auth_users_id": ObjectId(data.auth_users_id),
-                "news_id": ObjectId(data.news_id)
+                "eventId": ObjectId(data.eventId)
             }
             const cursor = await db.find(query);
             const final_result = await cursor.toArray();
@@ -26,15 +26,30 @@ class LogsLikeEvent {
             await client.close();
         }
     }
-    static async Insert(data, result) {
+    static async InsertOrDelete(data, result) {
         try {
             const db = await connection();
-            const doc = {
+            const query = {
                 "auth_users_id": ObjectId(data.auth_users_id),
-                "news_id": ObjectId(data.news_id)
+                "eventId": ObjectId(data.eventId)
             }
-            await db.insertOne(doc);
-            return result(null);
+            const find = db.find(query);
+            const allValues = await find.toArray();
+            if (allValues.length > 0) {
+                const doc = {
+                    "auth_users_id": ObjectId(data.auth_users_id),
+                    "eventId": ObjectId(data.eventId)
+                }
+                await db.deleteOne(doc);
+                return result(null);
+            } else {
+                const doc = {
+                    "auth_users_id": ObjectId(data.auth_users_id),
+                    "eventId": ObjectId(data.eventId)
+                }
+                await db.insertOne(doc);
+                return result(null);
+            }
         } catch (error) {
             return result(error);
         } finally {
