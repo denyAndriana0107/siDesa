@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const client = require("../../config/db/Mongo-dev");
+const client = require("../../config/db/Mongo");
 const { ObjectId } = require("mongodb");
 module.exports = {
     isLoggedIn: (req, res, next) => {

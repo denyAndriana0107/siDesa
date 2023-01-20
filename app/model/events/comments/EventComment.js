@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo-dev");
+const client = require("../../../config/db/Mongo");
 class EventsCommentsmodel {
     constructor(params) {
         this._id = params._id,
@@ -12,24 +12,16 @@ class EventsCommentsmodel {
     static async insert(data, result) {
         try {
             const db = await connection();
-            const query = {
-                "eventId": data.eventId,
-            }
-            const find = db.find(query);
-            const final_result = await find.toArray();
-            if (final_result.length > 0) {
-                const doc = {
-                    "text": data.text,
-                    "createdAt": data.createdAt,
-                    "updatedAt": data.updatedAt,
-                    "eventId": data.eventId,
-                    "auth_users_id": data.auth_users_id
-                };
-                await db.insertOne(doc);
-                return result(null);
-            } else {
-                return result({ kind: "data_not_found" });
-            }
+            const doc = {
+                "text": data.text,
+                "createdAt": data.createdAt,
+                "updatedAt": data.updatedAt,
+                "eventId": ObjectId(data.eventId),
+                "auth_users_id": ObjectId(data.auth_users_id)
+            };
+            await db.insertOne(doc);
+            return result(null);
+
         } catch (error) {
             return result(error.message);
         } finally {

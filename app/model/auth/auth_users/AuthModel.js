@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo-dev");
+const client = require("../../../config/db/Mongo");
 const bycrypts = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const helper = require("../../../helper/otp/OTP");
@@ -119,7 +119,8 @@ class AuthModel {
                                     secret: otp.secret
                                 },
                                 "SECRETKEY",
-                                { expiresIn: "1d" }
+                                // { expiresIn: "1d" }
+                                {}
                             );
                             const filter = { "_id": new ObjectId(allValues[0]["_id"]) };
                             const updateDocument = {

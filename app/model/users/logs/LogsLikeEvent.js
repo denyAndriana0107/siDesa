@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo-dev");
+const client = require("../../../config/db/Mongo");
 class LogsLikeEvent {
     constructor(params) {
         this._id = params._id
@@ -36,6 +36,7 @@ class LogsLikeEvent {
             const find = db.find(query);
             const allValues = await find.toArray();
             if (allValues.length > 0) {
+                const db = await connection();
                 const doc = {
                     "auth_users_id": ObjectId(data.auth_users_id),
                     "eventId": ObjectId(data.eventId)
@@ -43,6 +44,7 @@ class LogsLikeEvent {
                 await db.deleteOne(doc);
                 return result(null);
             } else {
+                const db = await connection();
                 const doc = {
                     "auth_users_id": ObjectId(data.auth_users_id),
                     "eventId": ObjectId(data.eventId)
@@ -51,7 +53,7 @@ class LogsLikeEvent {
                 return result(null);
             }
         } catch (error) {
-            return result(error);
+            return result(error.message);
         } finally {
             await client.close();
         }

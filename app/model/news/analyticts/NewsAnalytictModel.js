@@ -1,11 +1,12 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo-dev");
+const client = require("../../../config/db/Mongo");
 
 class NewsAnalyticsModel {
     constructor(params) {
         this.newsId = params.newsId,
             this.likes_count = params.likes_count,
-            this.views_count = params.views_count;
+            this.liked = params.liked,// variable untuk cek boolean user like events
+            this.views_count = params.views_count
     }
     // ================== read====================
     static async read(id_news, result) {
@@ -45,22 +46,30 @@ class NewsAnalyticsModel {
             await client.close();
         }
     }
-    static async add_like(id_news, result) {
+    static async add_like(data, result) {
         try {
             const db = await connection();
             const filter = {
-                "newsId": ObjectId(id_news)
+                "newsId": ObjectId(data.id_news)
             };
             const cursor = db.find(filter);
             const allValues = await cursor.toArray();
 
             if (allValues.length > 0) {
                 const db = await connection();
-                const doc = {
-                    $set: {
-                        views_count: allValues[0]['likes_count'] + 1
-                    }
-                };
+                if (data.liked) {
+                    doc = {
+                        $set: {
+                            likes_count: allValues[0]['likes_count'] - 1
+                        }
+                    };
+                } else {
+                    doc = {
+                        $set: {
+                            likes_count: allValues[0]['likes_count'] + 1
+                        }
+                    };
+                }
                 await db.updateOne(filter, doc);
                 return result(null);
             } else {

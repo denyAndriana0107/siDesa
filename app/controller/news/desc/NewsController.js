@@ -1,6 +1,6 @@
 const NewsModel = require("../../../model/news/desc/NewsModel");
 const NewsAnalyticsModel = require("../../../model/news/analyticts/NewsAnalytictModel");
-const NewsCommentsModel = require("../../../model/news/comments/NewsCommentsModel");
+const UserLogsLikeNews = require("../../../model/users/logs/LogsLikeNews");
 const helper = require("../../../helper/upload/UploadPhoto");
 const { ObjectId } = require("mongodb");
 
@@ -151,22 +151,34 @@ exports.insertNews = async (req, res, next) => {
 
 }
 exports.add_like = (req, res, next) => {
-    NewsAnalyticsModel.add_like(req.params.id_news, (error, result) => {
+    const data = new UsersLogsLike({
+        "auth_users_id": req.user.userId,
+        "eventId": req.params.id
+    });
+    UserLogsLikeNews.find(data, (error, result) => {
         if (error) {
-            if (error.kind === "not_found") {
-                return res.status(404).send({
-                    message: "not_found"
-                });
-            }
             return res.status(500).send({
                 message: error
             });
         } else {
-            return res.status(201).send({
-                message: 'liked'
+            const data_add_like = new AnalytictsModel({
+                "eventId": req.params.id,
+                "liked": result
+            });
+            NewsAnalyticsModel.add_like(data_add_like, (error, result2) => {
+                if (error) {
+                    return res.status(500).send({
+                        message: error
+                    });
+                } else {
+                    return res.status(201).send({
+                        message: 'ok'
+                    });
+                }
             });
         }
     });
+
 }
 
 exports.updateNews = (req, res, next) => {

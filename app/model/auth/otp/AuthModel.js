@@ -1,4 +1,4 @@
-const client = require("../../../config/db/Mongo-dev");
+const client = require("../../../config/db/Mongo");
 const { ObjectId } = require("mongodb");
 var helper = require("../../../helper/otp/OTP");
 
@@ -27,27 +27,28 @@ class OTPModel {
         const verifyOtp = helper.verify(data.otp, data.secret);
         if (!verifyOtp) {
             return result({ kind: "otp_incorrect" });
-        }
-        try {
-            const db = await connection();
-            const filter = {
-                "auth_users_id": ObjectId(data.auth_users_id)
-            };
-            const doc = {
-                $set: {
-                    validated: true
+        } else {
+            try {
+                const db = await connection();
+                const filter = {
+                    "auth_users_id": ObjectId(data.auth_users_id)
+                };
+                const doc = {
+                    $set: {
+                        validated: true
+                    }
+                };
+                const final_result = await db.updateOne(filter, doc);
+                if (final_result.modifiedCount == 1) {
+                    return result(null, verifyOtp);
+                } else {
+                    return result({ kind: "data_not_found" });
                 }
-            };
-            const final_result = await db.updateOne(filter, doc);
-            if (final_result.modifiedCount == 1) {
-                return result(null, verifyOtp);
-            } else {
-                return result({ kind: "data_not_found" });
+            } catch (error) {
+                return result(error);
+            } finally {
+                await client.close();
             }
-        } catch (error) {
-            return result(error);
-        } finally {
-            await client.close();
         }
     }
     static async delete(data, result) {

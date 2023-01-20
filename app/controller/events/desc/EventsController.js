@@ -95,8 +95,8 @@ exports.readAnalytits = (req, res, next) => {
 }
 exports.add_like = (req, res, next) => {
     const data = new UsersLogsLike({
-        "auth_users_id": ObjectId(req.user.userId),
-        "eventId": ObjectId(req.params.id)
+        "auth_users_id": req.user.userId,
+        "eventId": req.params.id
     });
     UsersLogsLike.find(data, (error, result) => {
         if (error) {
@@ -116,7 +116,7 @@ exports.add_like = (req, res, next) => {
                 } else {
                     const data_users_logs_like = new UsersLogsLike({
                         "eventId": req.params.id,
-                        "auth_users_id": ObjectId(req.user.userId)
+                        "auth_users_id": req.user.userId
                     });
                     UsersLogsLike.InsertOrDelete(data_users_logs_like, (error, result3) => {
                         if (error) {
@@ -265,7 +265,7 @@ exports.delete = (req, res, next) => {
                                 }
                             } else {
                                 return res.status(200).send({
-                                    message: result
+                                    message: "deleted"
                                 });
                             }
                         });

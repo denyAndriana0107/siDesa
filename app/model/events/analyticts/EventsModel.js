@@ -1,4 +1,4 @@
-const client = require("../../../config/db/Mongo-dev");
+const client = require("../../../config/db/Mongo");
 const { ObjectId } = require("mongodb");
 class AnalytictsModel {
     constructor(params) {
@@ -120,7 +120,7 @@ class AnalytictsModel {
                 const db = await connection();
                 const doc = {
                     $set: {
-                        shares_count: allValues[0]['views_count'] + 1
+                        shares_count: allValues[0]['shares_count'] + 1
                     }
                 };
                 await db.updateOne(filter, doc);

@@ -1,6 +1,68 @@
-const client = require("../../../config/db/Mongo-dev");
-class LogsLikeNews {
+const { ObjectId } = require("mongodb");
+const client = require("../../../config/db/Mongo");
+class LogsLikenews {
     constructor(params) {
-
+        this._id = params._id
+        this.auth_users_id = params.auth_users_id,
+            this.newsId = params.newsId
+    }
+    static async find(data, result) {
+        try {
+            const db = await connection();
+            const query = {
+                "auth_users_id": ObjectId(data.auth_users_id),
+                "newsId": ObjectId(data.newsId)
+            }
+            const cursor = await db.find(query);
+            const final_result = await cursor.toArray();
+            if (final_result.length > 0) {
+                return result(null, true);
+            } else {
+                return result(null, false);
+            }
+        } catch (error) {
+            return result(error);
+        } finally {
+            await client.close();
+        }
+    }
+    static async InsertOrDelete(data, result) {
+        try {
+            const db = await connection();
+            const query = {
+                "auth_users_id": ObjectId(data.auth_users_id),
+                "newsId": ObjectId(data.newsId)
+            }
+            const find = db.find(query);
+            const allValues = await find.toArray();
+            if (allValues.length > 0) {
+                const db = await connection();
+                const doc = {
+                    "auth_users_id": ObjectId(data.auth_users_id),
+                    "newsId": ObjectId(data.newsId)
+                }
+                await db.deleteOne(doc);
+                return result(null);
+            } else {
+                const db = await connection();
+                const doc = {
+                    "auth_users_id": ObjectId(data.auth_users_id),
+                    "newsId": ObjectId(data.newsId)
+                }
+                await db.insertOne(doc);
+                return result(null);
+            }
+        } catch (error) {
+            return result(error.message);
+        } finally {
+            await client.close();
+        }
     }
 }
+async function connection() {
+    await client.connect();
+    const database = client.db('siDesa');
+    const collection = database.collection('users_logs_like_news');
+    return collection;
+}
+module.exports = LogsLikenews;

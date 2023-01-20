@@ -1,4 +1,3 @@
-const { ObjectId } = require("mongodb");
 const EventsCommentsmodel = require("../../../model/events/comments/EventComment");
 const EventsModel = require("../../../model/events/desc/EventsModel");
 
@@ -7,22 +6,25 @@ exports.insertComments = (req, res, next) => {
         text: req.body.text,
         createdAt: new Date(),
         updatedAt: null,
-        eventId: ObjectId(req.params.id_event),
-        auth_users_id: ObjectId(req.user.userId)
+        eventId: req.params.id_event,
+        auth_users_id: req.user.userId
     });
-    EventsCommentsmodel.insert(data, (error, result) => {
+    EventsModel.readById(data.eventId, (error, result) => {
         if (error) {
-            if (error.kind === "data_not_found") {
-                return res.status(404).send({
-                    message: 'not_found'
-                });
-            }
             return res.status(500).send({
                 message: error
             });
         } else {
-            return res.status(201).send({
-                message: "comments created"
+            EventsCommentsmodel.insert(data, (error, result) => {
+                if (error) {
+                    return res.status(500).send({
+                        message: error
+                    });
+                } else {
+                    return res.status(201).send({
+                        message: "comments created"
+                    });
+                }
             });
         }
     });
@@ -50,8 +52,8 @@ exports.updateComments = (req, res, next) => {
         _id: req.params.id_comment,
         text: req.body.text,
         updatedAt: new Date(),
-        eventId: ObjectId(req.params.id_event),
-        auth_users_id: ObjectId(req.user.userId)
+        eventId: req.params.id_event,
+        auth_users_id: req.user.userId
     });
     EventsCommentsmodel.update(data, (error, result) => {
         if (error) {
@@ -73,8 +75,8 @@ exports.updateComments = (req, res, next) => {
 exports.deleteComments = (req, res, next) => {
     const data = new EventsCommentsmodel({
         _id: req.params.id_comment,
-        eventId: ObjectId(req.params.id_event),
-        auth_users_id: ObjectId(req.user.userId)
+        eventId: req.params.id_event,
+        auth_users_id: req.user.userId
     });
     EventsCommentsmodel.delete(data, (error, result) => {
         if (error) {
