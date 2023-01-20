@@ -24,6 +24,7 @@
   "homepage": "https://github.com/denyAndriana0107/siDesa#readme",
   "dependencies": {
     "aws-sdk": "^2.1285.0",
+    "axios": "^1.2.3",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.0",
     "cors": "^2.8.5",
@@ -38,8 +39,8 @@
     "nodemon": "^2.0.19",
     "speakeasy": "^2.0.0",
     "tunnel-ssh": "^5.0.1",
-    "twilio": "^3.84.1",
     "uuid": "^9.0.0",
-    "whatsapp-api-js": "^0.8.1"
+    "whatsapp-api-js": "^0.8.1",
+    "whatsapp-cloud-api": "^0.2.6"
   }
 }

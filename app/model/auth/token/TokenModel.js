@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo");
+const client = require("../../../config/db/Mongo-dev");
 class TokenModel {
     constructor(params) {
         this.auth_users_id = params.auth_users_id,
@@ -21,6 +21,7 @@ class TokenModel {
                     "token_fcm": data.token_fcm
                 };
                 await db.insertOne(doc);
+                return result(null);
             }
         } catch (error) {
             return result(error);
@@ -41,10 +42,13 @@ class TokenModel {
             };
             const final_result = await db.updateOne(filter, doc);
             if (final_result.matchedCount == 1) {
+                return result(null);
             } else {
+                return result({ kind: "data_not_found" });
             }
         } catch (error) {
         } finally {
+            await client.close();
         }
     }
 }
@@ -54,3 +58,4 @@ async function connection(params) {
     const collection = database.collection('auth_users_token');
     return collection;
 }
+module.exports = TokenModel;

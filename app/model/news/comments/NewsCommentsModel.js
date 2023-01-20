@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo");
+const client = require("../../../config/db/Mongo-dev");
 class NewsCommentsmodel {
     constructor(params) {
         this._id = params._id,
@@ -12,26 +12,15 @@ class NewsCommentsmodel {
     static async insert(data, result) {
         try {
             const db = await connection();
-            const query = {
+            const doc = {
+                "text": data.text,
+                "createdAt": data.createdAt,
+                "updatedAt": data.updatedAt,
                 "newsId": data.newsId,
-            }
-            const find = db.find(query);
-            const final_result = await find.toArray();
-            console.log(final_result);
-            console.log(final_result.length);
-            if (final_result.length > 0) {
-                const doc = {
-                    "text": data.text,
-                    "createdAt": data.createdAt,
-                    "updatedAt": data.updatedAt,
-                    "newsId": data.newsId,
-                    "auth_users_id": data.auth_users_id
-                };
-                await db.insertOne(doc);
-                return result(null);
-            } else {
-                return result({ kind: "data_not_found" });
-            }
+                "auth_users_id": data.auth_users_id
+            };
+            await db.insertOne(doc);
+            return result(null);
         } catch (error) {
             return result(error.message);
         } finally {
@@ -114,4 +103,6 @@ async function connection() {
     const collection = database.collection('news_comments');
     return collection;
 }
+
+
 module.exports = NewsCommentsmodel;

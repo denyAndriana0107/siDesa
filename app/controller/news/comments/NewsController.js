@@ -10,22 +10,28 @@ exports.insertComments = (req, res, next) => {
         newsId: ObjectId(req.params.id_news),
         auth_users_id: ObjectId(req.user.userId)
     });
-    NewsCommentsmodel.insert(data, (error, result) => {
+    NewsModel.readById(req.params.id_news, (error, resultNews) => {
         if (error) {
             if (error.kind === "not_found") {
                 return res.status(404).send({
                     message: 'not_found'
                 });
             }
-            return res.status(500).send({
-                message: error
-            });
         } else {
-            return res.status(201).send({
-                message: "comments created"
+            NewsCommentsmodel.insert(data, (error, result) => {
+                if (error) {
+                    return res.status(500).send({
+                        message: error
+                    });
+                } else {
+                    return res.status(201).send({
+                        message: "comments created"
+                    });
+                }
             });
         }
     });
+
 }
 exports.readComments = (req, res, next) => {
     NewsCommentsmodel.read(req.params.id_news, (error, result) => {

@@ -1,10 +1,13 @@
 const AuthModel = require("../../model/auth/auth_users/AuthModel");
 const OTP = require("../../model/auth/otp/AuthModel");
-const helper = require("../../helper/otp/OTP");
+const OTPModel = require("../../model/auth/otp/AuthModel");
+const TokenFCM = require("../../model/auth/token/TokenModel");
+
+const { sendMessage, getTextMessageInput } = require("../../helper/WhatsApp/WhatsApp");
 const bycrypts = require("bcryptjs");
 const { ObjectId } = require("mongodb");
 var uuid = require("uuid");
-const OTPModel = require("../../model/auth/otp/AuthModel");
+require("dotenv").config();
 
 
 // sign up admin RW
@@ -43,13 +46,17 @@ exports.signUp = (req, res, next) => {
 
 exports.signIn2 = (req, res, next) => {
     const data = new AuthModel({
-        "_id": new ObjectId(),
         "phone": req.body.phone.toLowerCase(),
         "password": req.body.password
     });
     AuthModel.signIn(data, (error, result) => {
         if (error) {
             if (error.kind === "users_not_found") {
+                const data = new AuthModel({
+                    "_id": new ObjectId(),
+                    "phone": req.body.phone.toLowerCase(),
+                    "password": req.body.password
+                });
                 AuthModel.signUpWarga(data, (error, result2) => {
                     if (error) {
                         if (error.kind === "data_conflict") {
@@ -58,7 +65,7 @@ exports.signIn2 = (req, res, next) => {
                             });
                         }
                         return res.status(500).send({
-                            message: error
+                            message: error + "a"
                         });
                     } else {
                         AuthModel.signIn(data, (error, result3) => {
@@ -73,11 +80,21 @@ exports.signIn2 = (req, res, next) => {
                                 OTPModel.insert(otp_data, (error, result4) => {
                                     if (error) {
                                         return res.status(500).send({
-                                            message: error
+                                            message: error + "otp"
                                         });
                                     } else {
-                                        return res.status(200).send({
-                                            message: result3
+                                        var phone_split = data.phone;
+                                        var RECIPIENT_WAID = "62" + phone_split;
+                                        var otp_result = result3['otp'];
+                                        var data_message = getTextMessageInput(RECIPIENT_WAID, `Warga !!.Terima kasih telah mendaftarkan nomor ponsel diaplikasi kami. Berikut kode verikifikasi akun anda : *${otp_result}*`);
+                                        sendMessage(data_message).then((response) => {
+                                            return res.status(200).send({
+                                                message: result3["token"]
+                                            });
+                                        }).catch((error) => {
+                                            return res.status(500).send({
+                                                message: error.response.data
+                                            });
                                         });
                                     }
                                 });
@@ -95,8 +112,18 @@ exports.signIn2 = (req, res, next) => {
                 });
             }
         } else {
-            return res.status(200).send({
-                message: result
+            var phone_split = data.phone;
+            var RECIPIENT_WAID = "62" + phone_split;
+            var otp_result = result['otp'];
+            var data_message = getTextMessageInput(RECIPIENT_WAID, `Warga !!.Terima kasih telah mendaftarkan nomor ponsel diaplikasi kami. Berikut kode verikifikasi akun anda : *${otp_result}*`);
+            sendMessage(data_message).then((response) => {
+                return res.status(200).send({
+                    message: result["token"]
+                });
+            }).catch((error) => {
+                return res.status(500).send({
+                    message: error.response.data
+                });
             });
         }
     })
@@ -132,6 +159,37 @@ exports.validateOTP = (req, res, next) => {
         } else {
             return res.status(200).send({
                 message: result
+            });
+        }
+    });
+}
+exports.insertOrUpdateTokenFCM = (req, res, next) => {
+    const data = new TokenFCM({
+        "auth_users_id": req.user.userId,
+        "token_fcm": req.body.token_fcm
+    });
+    TokenFCM.insert(data, (error, result) => {
+        if (error) {
+            if (error.kind === "data_conflict") {
+                TokenFCM.update(data, (error, result2) => {
+                    if (error) {
+                        return res.status(500).send({
+                            message: error
+                        });
+                    } else {
+                        return res.status(201).send({
+                            message: 'ok'
+                        });
+                    }
+                });
+            } else {
+                return res.status(500).send({
+                    message: error
+                });
+            }
+        } else {
+            return res.status(201).send({
+                message: 'ok'
             });
         }
     });

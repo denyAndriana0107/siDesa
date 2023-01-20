@@ -40,7 +40,6 @@ require("./app/routes/events/comments/EventRoutes")(app);
 // users
 require("./app/routes/users/profile/ProfileRoutes")(app);
 
-require("./app/routes/twilio/a")(app);
 
 //=================routes====================//
 
