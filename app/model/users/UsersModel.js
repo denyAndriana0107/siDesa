@@ -4,7 +4,7 @@ class UsersModel {
     constructor(params) {
         this.name = params.name,
             this.photo = params.photo,
-            this.authId = params.authId,
+            this.auth_users_id = params.auth_users_id,
             this.RWId = params.RWId,
             this.address = params.address;
     }
@@ -12,7 +12,7 @@ class UsersModel {
         try {
             const db = await connection();
             const query = {
-                "authId": ObjectId(id)
+                "auth_users_id": ObjectId(id)
             };
             const cursor = await db.find(query);
             const allValues = await cursor.toArray();
@@ -32,7 +32,7 @@ class UsersModel {
         try {
             const db = await connection();
             const query = {
-                "authId": ObjectId(data.authId)
+                "auth_users_id": ObjectId(data.auth_users_id)
             };
             const cursor = await db.find(query);
             const allValues = await cursor.toArray();
@@ -42,7 +42,7 @@ class UsersModel {
                 const doc = {
                     "name": data.name,
                     "photo": data.photo,
-                    "authId": ObjectId(data.authId),
+                    "auth_users_id": ObjectId(data.auth_users_id),
                     "RWId": data.RWId,
                     "address": data.address
                 };
@@ -59,7 +59,7 @@ class UsersModel {
         try {
             const db = await connection();
             const filter = {
-                "authId": ObjectId(id)
+                "auth_users_id": ObjectId(id)
             };
             const doc = {
                 $set: {
@@ -83,7 +83,7 @@ class UsersModel {
         try {
             const db = await connection();
             const filter = {
-                "authId": ObjectId(id)
+                "auth_users_id": ObjectId(id)
             };
             const doc = {
                 $set: {
@@ -106,7 +106,7 @@ class UsersModel {
         try {
             const db = await connection();
             const query = {
-                "authId": ObjectId(id)
+                "auth_users_id": ObjectId(id)
             };
             const final_result = await db.deleteOne(query);
             if (final_result.deletedCount == 1) {
@@ -120,6 +120,7 @@ class UsersModel {
             await client.close();
         }
     }
+
 }
 async function connection(params) {
     await client.connect();

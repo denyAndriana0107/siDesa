@@ -131,11 +131,18 @@ class AuthModel {
                             const database = client.db('siDesa');
                             const collection = database.collection('auth_users');
                             await collection.updateOne(filter, updateDocument);
-                            const final_result = {
-                                token: token,
-                                otp: otp.token
-                            };
-                            return result(null, final_result);
+                            this.getrole(allValues[0]["_id"], (error, result_role) => {
+                                if (error) {
+                                    return result({ kind: "users_incorrect" }, null);
+                                } else {
+                                    const final_result = {
+                                        token: token,
+                                        otp: otp.token,
+                                        role: result_role
+                                    };
+                                    return result(null, final_result);
+                                }
+                            });
                         } else {
                             return result({ kind: "users_incorrect" }, null);
                         }
@@ -146,6 +153,54 @@ class AuthModel {
             }
         } catch (error) {
             return result(error.message);
+        }
+    }
+    static async getrole(auth_users_id, result) {
+        try {
+            const db = await connection();
+            var options = {
+                allowDiskUse: true
+            };
+            var pipeline = [
+                {
+                    "$project": {
+                        "_id": 0,
+                        "auth_users": "$$ROOT"
+                    }
+                },
+                {
+                    "$lookup": {
+                        "localField": "auth_users.auth_users_group_id",
+                        "from": "auth_users_group",
+                        "foreignField": "_id",
+                        "as": "auth_users_group"
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$auth_users_group",
+                        "preserveNullAndEmptyArrays": true
+                    }
+                },
+                {
+                    "$match": {
+                        "auth_users._id": ObjectId(auth_users_id)
+                    }
+                },
+                {
+                    "$project": {
+                        "auth_users_group.role": "$auth_users_group.role",
+                        "_id": 0
+                    }
+                }
+            ];
+            var cursor = db.aggregate(pipeline, options);
+            var final_result = await cursor.toArray();
+            return result(null, final_result);
+        } catch (error) {
+            return result(error);
+        } finally {
+            await client.close();
         }
     }
 }

@@ -16,7 +16,7 @@ exports.read = (req, res, next) => {
                     name: result[0]['name'],
                     photo: data,
                     RWId: result[0]['RWId'],
-                    authId: result[0]['authId'],
+                    auth_users_id: result[0]['auth_users_id'],
                     address: result[0]['address']
                 });
                 return res.status(200).send({
@@ -34,7 +34,7 @@ exports.insert = (req, res, next) => {
     const data = new ProfileModel({
         "name": req.body.name,
         "photo": "default.jpg",
-        "authId": req.user.userId,
+        "auth_users_id": req.user.userId,
         "RWId": req.user.RWId,
         "address": req.body.address
     });
