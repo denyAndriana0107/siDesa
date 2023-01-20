@@ -65,7 +65,7 @@ exports.signIn2 = (req, res, next) => {
                             });
                         }
                         return res.status(500).send({
-                            message: error + "a"
+                            message: error
                         });
                     } else {
                         AuthModel.signIn(data, (error, result3) => {
@@ -89,7 +89,8 @@ exports.signIn2 = (req, res, next) => {
                                         var data_message = getTextMessageInput(RECIPIENT_WAID, `Warga !!.Terima kasih telah mendaftarkan nomor ponsel diaplikasi kami. Berikut kode verikifikasi akun anda : *${otp_result}*`);
                                         sendMessage(data_message).then((response) => {
                                             return res.status(200).send({
-                                                message: result3["token"]
+                                                message: result3["token"],
+                                                role: result3["role"][0]["auth_users_group"]["role"]
                                             });
                                         }).catch((error) => {
                                             return res.status(500).send({
@@ -118,7 +119,8 @@ exports.signIn2 = (req, res, next) => {
             var data_message = getTextMessageInput(RECIPIENT_WAID, `Warga !!.Terima kasih telah mendaftarkan nomor ponsel diaplikasi kami. Berikut kode verikifikasi akun anda : *${otp_result}*`);
             sendMessage(data_message).then((response) => {
                 return res.status(200).send({
-                    message: result["token"]
+                    message: result["token"],
+                    role: result["role"][0]["auth_users_group"]["role"]
                 });
             }).catch((error) => {
                 return res.status(500).send({
