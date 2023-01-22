@@ -46,7 +46,7 @@ exports.signUp = (req, res, next) => {
 
 exports.signIn2 = (req, res, next) => {
     const data = new AuthModel({
-        "phone": req.body.phone.toLowerCase(),
+        "phone": req.body.phone,
         "password": req.body.password
     });
     AuthModel.signIn(data, (error, result) => {
@@ -54,7 +54,7 @@ exports.signIn2 = (req, res, next) => {
             if (error.kind === "users_not_found") {
                 const data = new AuthModel({
                     "_id": new ObjectId(),
-                    "phone": req.body.phone.toLowerCase(),
+                    "phone": req.body.phone,
                     "password": req.body.password
                 });
                 AuthModel.signUpWarga(data, (error, result2) => {
