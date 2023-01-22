@@ -151,9 +151,9 @@ exports.insertNews = async (req, res, next) => {
 
 }
 exports.add_like = (req, res, next) => {
-    const data = new UsersLogsLike({
+    const data = new UserLogsLikeNews({
         "auth_users_id": req.user.userId,
-        "eventId": req.params.id
+        "newsId": req.params.id
     });
     UserLogsLikeNews.find(data, (error, result) => {
         if (error) {
@@ -161,8 +161,8 @@ exports.add_like = (req, res, next) => {
                 message: error
             });
         } else {
-            const data_add_like = new AnalytictsModel({
-                "eventId": req.params.id,
+            const data_add_like = new NewsAnalyticsModel({
+                "newsId": req.params.id,
                 "liked": result
             });
             NewsAnalyticsModel.add_like(data_add_like, (error, result2) => {
@@ -171,8 +171,20 @@ exports.add_like = (req, res, next) => {
                         message: error
                     });
                 } else {
-                    return res.status(201).send({
-                        message: 'ok'
+                    const data_users_logs_like = new UserLogsLikeNews({
+                        "auth_users_id": req.user.userId,
+                        "newsId": req.params.id_news
+                    });
+                    UserLogsLikeNews.InsertOrDelete(data_users_logs_like, (error, result_final) => {
+                        if (error) {
+                            return res.status(500).send({
+                                message: error
+                            });
+                        } else {
+                            return res.status(200).send({
+                                message: 'ok'
+                            });
+                        }
                     });
                 }
             });

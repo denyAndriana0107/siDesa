@@ -50,13 +50,14 @@ class NewsAnalyticsModel {
         try {
             const db = await connection();
             const filter = {
-                "newsId": ObjectId(data.id_news)
+                "newsId": ObjectId(data.newsId)
             };
             const cursor = db.find(filter);
             const allValues = await cursor.toArray();
 
             if (allValues.length > 0) {
                 const db = await connection();
+                var doc = null;
                 if (data.liked) {
                     doc = {
                         $set: {

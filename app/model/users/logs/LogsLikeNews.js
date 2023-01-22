@@ -21,7 +21,7 @@ class LogsLikenews {
                 return result(null, false);
             }
         } catch (error) {
-            return result(error);
+            return result(error.message);
         } finally {
             await client.close();
         }
