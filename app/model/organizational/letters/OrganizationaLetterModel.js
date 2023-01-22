@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+const { ObjectId } = require("mongodb");
 const client = require("../../../config/db/Mongo");
 class OrganizationalLetterModel {
     constructor(params) {
@@ -6,23 +6,67 @@ class OrganizationalLetterModel {
             this.RWId = params.RWId,
             this.letter_name = params.letter_name,
             this.details = params.details,
-            this.about = params.about,
-            this.definition = params.definition,
-            this.createadAt = params.createadAt,
+            this.createdAt = params.createdAt,
             this.updatedAt = params.updatedAt
     }
     static async insert(data, result) {
         try {
             const db = await connection();
+            const details = [];
+            for (let i = 0; i < data.details.length; i++) {
+                details.push({
+                    "about": data.details[i]['about'],
+                    "definition": data.details[i]['definition']
+                })
+            }
             const doc = {
                 "RWId": data.RWId,
                 "letter_name": data.letter_name,
-                "details": data.details,
-                "createdAt": data.createadAt,
+                "details": details,
+                "createdAt": data.createdAt,
                 "updatedAt": data.updatedAt
             }
             await db.insertOne(doc);
             return result(null);
+        } catch (error) {
+            return result(error.message);
+        } finally {
+            await client.close();
+        }
+    }
+    static async read(data, result) {
+        try {
+            const db = await connection();
+            const filter = {
+                "RWId": data.RWId
+            }
+            const cursor = db.find(filter);
+            const final_result = await cursor.toArray();
+            if (final_result.length > 0) {
+                return result(null, final_result);
+            } else {
+                return result({ kind: "data_not_found" });
+            }
+        } catch (error) {
+            return result(error.message);
+        } finally {
+            await client.close();
+        }
+    }
+    static async readById(data, result) {
+        try {
+            const db = await connection();
+            const filter = {
+                "_id": ObjectId(data._id),
+                "RWId": data.RWId
+            }
+            const cursor = db.find(filter);
+            const final_result = await cursor.toArray();
+            if (final_result.length > 0) {
+                return result(null, final_result);
+            } else {
+                return result({ kind: "data_not_found" });
+            }
         } catch (error) {
             return result(error.message);
         } finally {
@@ -36,10 +80,17 @@ class OrganizationalLetterModel {
                 "_id": ObjectId(data._id),
                 "RWId": data.RWId
             }
+            const details = [];
+            for (let i = 0; i < data.details.length; i++) {
+                details.push({
+                    "about": data.details[i]['about'],
+                    "definition": data.details[i]['definition']
+                })
+            }
             const doc = {
                 $set: {
                     letter_name: data.letter_name,
-                    details: data.details,
+                    details: details,
                     updatedAt: data.updatedAt
                 }
             }

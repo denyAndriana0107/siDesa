@@ -63,10 +63,15 @@ exports.signIn2 = (req, res, next) => {
                             return res.status(409), send({
                                 message: "data_conflict"
                             });
+                        } else if (error.kind === "RWId_not_found") {
+                            return res.status(404), send({
+                                message: "RW not_found"
+                            });
+                        } else {
+                            return res.status(500).send({
+                                message: error
+                            });
                         }
-                        return res.status(500).send({
-                            message: error
-                        });
                     } else {
                         AuthModel.signIn(data, (error, result3) => {
                             if (error) {

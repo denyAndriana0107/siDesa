@@ -71,6 +71,7 @@ class EventsModel {
             await client.close();
         }
     }
+
     static async insert(data, result) {
         try {
             const db = await connection();

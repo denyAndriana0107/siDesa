@@ -32,6 +32,7 @@ require("./app/routes/news/comment/NewsRoutes")(app);//reply coments belum sama 
 require("./app/routes/organizational/structure/StructureRoutes")(app);//add person >1 belum
 require("./app/routes/organizational/profile/ProfileRoutes")(app);
 require("./app/routes/organizational/facilities/FacilitiesRoutes")(app);
+require("./app/routes/organizational/letters/LettersRoutes")(app);
 
 // event organizational
 require("./app/routes/events/desc/EventRoutes")(app);
