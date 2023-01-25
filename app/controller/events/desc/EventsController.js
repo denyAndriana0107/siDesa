@@ -97,7 +97,7 @@ exports.searchEvent = (req, res, next) => {
     const data = new EventsModel({
         "RWId": req.user.RWId
     });
-    const keyword = req.body.keyword.toLowerCase();
+    const keyword = req.body.keyword;
     EventsModel.searchEvent(data, keyword, (error, result) => {
         if (error) {
             if (error.kind === "data_not_found") {

@@ -1,5 +1,5 @@
 const client = require("../../../config/db/Mongo");
-const { ObjectId } = require("mongodb");
+const { ObjectId, BSONRegExp } = require("mongodb");
 class EventsModel {
     constructor(params) {
         this._id = params._id,
