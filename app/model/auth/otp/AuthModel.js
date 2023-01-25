@@ -39,7 +39,7 @@ class OTPModel {
                     }
                 };
                 const final_result = await db.updateOne(filter, doc);
-                if (final_result.modifiedCount == 1) {
+                if (final_result.modifiedCount == 1 || final_result.matchedCount == 1) {
                     return result(null, verifyOtp);
                 } else {
                     return result({ kind: "data_not_found" });

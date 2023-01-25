@@ -71,7 +71,53 @@ class EventsModel {
             await client.close();
         }
     }
-
+    static async searchEvent(data, keyword, result) {
+        try {
+            const db = await connection();
+            const query = {
+                "RWId": data.RWId,
+                "$or": [
+                    {
+                        "event_name": new BSONRegExp(`^.*${keyword}.*$`, "i")
+                    },
+                    {
+                        "description": new BSONRegExp(`^.*${keyword}.*$`, "i")
+                    }
+                ]
+            };
+            const cursor = db.find(query);
+            const final_result = await cursor.toArray();
+            if (final_result.length > 0) {
+                return result(null, final_result);
+            } else {
+                return result({ kind: "data_not_found" });
+            }
+        } catch (error) {
+            return result(error.message);
+        } finally {
+            await client.close();
+        }
+    }
+    static async readByCategory(data, result) {
+        try {
+            const db = await connection();
+            const query = {
+                "RWId": data.RWId,
+                "category": data.category
+            }
+            const cursor = db.find(query);
+            const final_result = await cursor.toArray();
+            if (final_result.length > 0) {
+                return result(null, final_result);
+            } else {
+                return result({ kind: "data_not_found" });
+            }
+        } catch (error) {
+            return result(error.message);
+        } finally {
+            await client.close();
+        }
+    }
     static async insert(data, result) {
         try {
             const db = await connection();

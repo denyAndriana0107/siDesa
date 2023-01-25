@@ -93,6 +93,50 @@ exports.readAnalytits = (req, res, next) => {
         }
     });
 }
+exports.searchEvent = (req, res, next) => {
+    const data = new EventsModel({
+        "RWId": req.user.RWId
+    });
+    const keyword = req.body.keyword.toLowerCase();
+    EventsModel.searchEvent(data, keyword, (error, result) => {
+        if (error) {
+            if (error.kind === "data_not_found") {
+                return res.status(404).send({
+                    message: 'not_found'
+                });
+            }
+            return res.status(500).send({
+                message: error
+            });
+        } else {
+            return res.status(200).send({
+                message: result
+            });
+        }
+    });
+}
+exports.readByCategory = (req, res, next) => {
+    const data = new EventsModel({
+        "RWId": req.user.RWId,
+        "category": req.body.category
+    });
+    EventsModel.readByCategory(data, (error, result) => {
+        if (error) {
+            if (error.kind === "data_not_found") {
+                return res.status(404).send({
+                    message: 'not_found'
+                });
+            }
+            return res.status(500).send({
+                message: error
+            });
+        } else {
+            return res.status(200).send({
+                message: result
+            });
+        }
+    });
+}
 exports.add_like = (req, res, next) => {
     const data = new UsersLogsLike({
         "auth_users_id": req.user.userId,

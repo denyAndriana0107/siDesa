@@ -167,6 +167,11 @@ exports.add_like = (req, res, next) => {
             });
             NewsAnalyticsModel.add_like(data_add_like, (error, result2) => {
                 if (error) {
+                    if (error.kind == "not_found") {
+                        return res.status(404).send({
+                            message: 'not_found'
+                        });
+                    }
                     return res.status(500).send({
                         message: error
                     });
