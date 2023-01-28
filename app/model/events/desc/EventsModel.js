@@ -90,13 +90,6 @@ class EventsModel {
                     }
                 },
                 {
-                    "$replaceRoot": {
-                        "newRoot": {
-                            "$mergeObjects": ["$events_analyticts_docs", "$$ROOT"]
-                        }
-                    }
-                },
-                {
                     "$match": {
                         "_id": ObjectId(`${data._id}`),
                         "RWId": data.RWId
@@ -144,13 +137,6 @@ class EventsModel {
                     }
                 },
                 {
-                    "$replaceRoot": {
-                        "newRoot": {
-                            "$mergeObjects": ["$events_analyticts_docs", "$$ROOT"]
-                        }
-                    }
-                },
-                {
                     "$project": {
                         "events_analyticts_docs": 0
                     }
@@ -193,13 +179,6 @@ class EventsModel {
                     "$addFields": {
                         "events_analyticts_docs": {
                             "$arrayElemAt": ["$events_analyticts_docs", 0]
-                        }
-                    }
-                },
-                {
-                    "$replaceRoot": {
-                        "newRoot": {
-                            "$mergeObjects": ["$events_analyticts_docs", "$$ROOT"]
                         }
                     }
                 },

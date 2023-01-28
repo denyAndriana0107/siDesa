@@ -8,7 +8,7 @@ const bp = require('body-parser');
 app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }));
 app.use(helmet());
-app.use(sqlinjection);
+// app.use(sqlinjection);
 const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
