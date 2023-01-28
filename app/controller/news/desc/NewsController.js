@@ -44,11 +44,9 @@ exports.readNews = (req, res, next) => {
                     });
                 });
             }
-
         }
     });
 }
-
 exports.readNewsById = (req, res, next) => {
     NewsModel.readById(req.params.id_news, (error, result) => {
         if (error) {
@@ -98,6 +96,53 @@ exports.readNewsById = (req, res, next) => {
                     });
                 }
             });
+        }
+    });
+}
+exports.readNewsByCategory = (req, res, next) => {
+    const data = new NewsModel({
+        "category": req.body.category,
+        "RWId": req.user.RWId
+    });
+    NewsModel.readByCategory(data, (error, result) => {
+        if (error) {
+            if (error.kind === "not_found") {
+                return res.status(404).send({
+                    message: "not_found"
+                });
+            }
+            return res.status(500).send({
+                message: error
+            });
+        } else {
+            var final_result = [];
+            for (let index = 0; index < result.length; index++) {
+                let file_path = result[index]['photo'];
+                helper.getUrl(file_path).then((success) => {
+                    final_result.push({
+                        _id: result[index]['_id'],
+                        title: result[index]['title'],
+                        description: result[index]['description'],
+                        category: result[index]['category'],
+                        photo: success,
+                        analyticts: {
+                            likes_count: result[index]['likes_count'],
+                            views_count: result[index]['views_count']
+                        },
+                        createdAt: result[index]['createdAt'],
+                        updatedAt: result[index]['updatedAt']
+                    });
+                    if (index == result.length - 1) {
+                        return res.status(200).send({
+                            message: final_result
+                        });
+                    }
+                }).catch((error) => {
+                    return res.status(500).send({
+                        message: error
+                    });
+                });
+            }
         }
     });
 }

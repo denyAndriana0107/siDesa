@@ -14,18 +14,23 @@ class UsersModel {
             };
             var pipeline = [
                 {
-                    "$lookup": {
-                        "from": "auth_users",
-                        "localField": "auth_users_id",
-                        "foreignField": "_id",
-                        "as": "auth_users_docs"
+                    "$project": {
+                        "_id": 0,
+                        "users_profile": "$$ROOT"
                     }
                 },
                 {
-                    "$addFields": {
-                        "auth_users_docs": {
-                            "$arrayElemAt": ["$auth_users_docs", 0]
-                        }
+                    "$lookup": {
+                        "localField": "users_profile.auth_users_id",
+                        "from": "auth_users",
+                        "foreignField": "_id",
+                        "as": "auth_users"
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$auth_users",
+                        "preserveNullAndEmptyArrays": true
                     }
                 },
                 {
@@ -35,10 +40,11 @@ class UsersModel {
                 },
                 {
                     "$project": {
-                        _id: "$auth_users_docs._id",
-                        phone: "$auth_users_docs.phone",
-                        name: "$name",
-                        photo: "$photo",
+                        "users_profile.name": "$users_profile.name",
+                        "users_profile.photo": "$users_profile.photo",
+                        "auth_users._id": "$auth_users._id",
+                        "auth_users.phone": "$auth_users.phone",
+                        "_id": 0
                     }
                 }
             ];

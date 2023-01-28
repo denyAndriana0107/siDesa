@@ -23,32 +23,23 @@ class NewsModel {
             };
             var pipeline = [
                 {
-                    "$lookup": {
-                        "from": "news_analyticts",
-                        "localField": "_id",
-                        "foreignField": "newsId",
-                        "as": "news_analyticts_docs"
-                    }
-                },
-                {
-                    "$addFields": {
-                        "news_analyticts_docs": {
-                            "$arrayElemAt": ["$news_analyticts_docs", 0]
-                        }
-                    }
-                },
-                {
                     "$project": {
-                        "_id": "$_id",
-                        "newsId": "$newsId",
-                        "title": "$title",
-                        "description": "$description",
-                        "category": "$category",
-                        "photo": "$photo",
-                        "createdAt": "$createdAt",
-                        "updatedAt": "$updatedAt",
-                        "likes_count": "$news_analyticts_docs.likes_count",
-                        "views_count": "$news_analyticts_docs.views_count"
+                        "_id": 0,
+                        "news": "$$ROOT"
+                    }
+                },
+                {
+                    "$lookup": {
+                        "localField": "news._id",
+                        "from": "news_analyticts",
+                        "foreignField": "newsId",
+                        "as": "news_analyticts"
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$news_analyticts",
+                        "preserveNullAndEmptyArrays": true
                     }
                 }
             ];
@@ -77,40 +68,83 @@ class NewsModel {
             };
             var pipeline = [
                 {
-                    "$lookup": {
-                        "from": "news_analyticts",
-                        "localField": "_id",
-                        "foreignField": "newsId",
-                        "as": "news_analyticts_docs"
+                    "$project": {
+                        "_id": 0,
+                        "news": "$$ROOT"
                     }
                 },
                 {
-                    "$addFields": {
-                        "news_analyticts_docs": {
-                            "$arrayElemAt": ["$news_analyticts_docs", 0]
-                        }
+                    "$lookup": {
+                        "localField": "news._id",
+                        "from": "news_analyticts",
+                        "foreignField": "newsId",
+                        "as": "news_analyticts"
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$news_analyticts",
+                        "preserveNullAndEmptyArrays": true
                     }
                 },
                 {
                     "$match": {
                         "_id": new ObjectId(id_news)
                     }
-
                 },
+            ];
+
+            const cursor = collection.aggregate(pipeline, options);
+            const allValues = await cursor.toArray();
+
+            var array_data = [];
+            array_data = allValues;
+            if (array_data.length > 0) {
+                return result(null, array_data);
+            } else {
+                return result({ kind: "not_found" });
+            }
+        } catch (error) {
+            return result(error.message);
+        } finally {
+            await client.close();
+        }
+    }
+    static async readByCategory(data, result) {
+        try {
+            await client.connect();
+            const database = client.db('siDesa');
+            const collection = database.collection('news');
+            var options = {
+                allowDiskUse: true
+            };
+            var pipeline = [
                 {
                     "$project": {
-                        "_id": "$_id",
-                        "newsId": "$newsId",
-                        "title": "$title",
-                        "description": "$description",
-                        "category": "$category",
-                        "photo": "$photo",
-                        "createdAt": "$createdAt",
-                        "updatedAt": "$updatedAt",
-                        "likes_count": "$news_analyticts_docs.likes_count",
-                        "views_count": "$news_analyticts_docs.views_count"
+                        "_id": 0,
+                        "news": "$$ROOT"
                     }
-                }
+                },
+                {
+                    "$lookup": {
+                        "localField": "news._id",
+                        "from": "news_analyticts",
+                        "foreignField": "newsId",
+                        "as": "news_analyticts"
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$news_analyticts",
+                        "preserveNullAndEmptyArrays": true
+                    }
+                },
+                {
+                    "$match": {
+                        "RWId": new ObjectId(data.RWId),
+                        "category": data.category
+                    }
+                },
             ];
             const cursor = collection.aggregate(pipeline, options);
             const allValues = await cursor.toArray();

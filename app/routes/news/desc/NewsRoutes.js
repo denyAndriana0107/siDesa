@@ -18,6 +18,7 @@ module.exports = app => {
     router.get('/news/:id_news', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.readNewsById);
     router.get('/news/analyticts/:id_news', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.readNewsAnalytictsById);
 
+    router.post('/news/category', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.readNewsByCategory);
     router.post('/news/insert', multer.single('file'), auth_middleware.isLoggedIn, permission_middleware.isSuperAdmin, dao.insertNews);
     router.post('/news/add_like/:id_news', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.add_like);
 

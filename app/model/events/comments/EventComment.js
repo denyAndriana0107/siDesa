@@ -38,34 +38,41 @@ class EventsCommentsmodel {
             };
             var pipeline = [
                 {
-                    "$lookup": {
-                        "from": "users_profile",
-                        "localField": "auth_users_id",
-                        "foreignField": "auth_users_id",
-                        "as": "users_profile_docs"
+                    "$project": {
+                        "_id": 0,
+                        "events_comments": "$$ROOT"
                     }
                 },
                 {
-                    "$addFields": {
-                        "users_profile_docs": {
-                            "$arrayElemAt": ["$users_profile_docs", 0]
-                        }
+                    "$lookup": {
+                        "localField": "events_comments.auth_users_id",
+                        "from": "users_profile",
+                        "foreignField": "auth_users_id",
+                        "as": "users_profile"
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$users_profile",
+                        "preserveNullAndEmptyArrays": true
+                    }
+                },
+                {
+                    "$project": {
+                        "events_comments._id": "$events_comments._id",
+                        "events_comments.auth_users_id": "$events_comments.auth_users_id",
+                        "events_comments.eventId": "$events_comments.eventId",
+                        "events_comments.text": "$events_comments.text",
+                        "events_comments.createdAt": "$events_comments.createdAt",
+                        "events_comments.updatedAt": "$events_comments.updatedAt",
+                        "users_profile.name": "$users_profile.name",
+                        "users_profile.photo": "$users_profile.photo",
+                        "_id": 0
                     }
                 },
                 {
                     "$match": {
                         "eventId": ObjectId(id_Events)
-                    }
-                },
-                {
-                    "$project": {
-                        "_id": "$_id",
-                        "text": "$text",
-                        "eventId": "$eventId",
-                        "createdAt": "$createdAt",
-                        "updatedAt": "$updatedAt",
-                        "name": "$users_profile_docs.name",
-                        "photo": "$users_profile_docs.photo"
                     }
                 }
             ];

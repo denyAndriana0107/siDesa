@@ -22,35 +22,28 @@ class EventsModel {
             };
             var pipeline = [
                 {
+                    "$project": {
+                        "_id": 0,
+                        "events": "$$ROOT"
+                    }
+                },
+                {
                     "$lookup": {
+                        "localField": "events._id",
                         "from": "events_analyticts",
-                        "localField": "_id",
                         "foreignField": "eventId",
-                        "as": "events_analyticts_docs"
+                        "as": "events_analyticts"
                     }
                 },
                 {
-                    "$addFields": {
-                        "events_analyticts_docs": {
-                            "$arrayElemAt": ["$events_analyticts_docs", 0]
-                        }
-                    }
-                },
-                {
-                    "$replaceRoot": {
-                        "newRoot": {
-                            "$mergeObjects": ["$events_analyticts_docs", "$$ROOT"]
-                        }
+                    "$unwind": {
+                        "path": "$events_analyticts",
+                        "preserveNullAndEmptyArrays": true
                     }
                 },
                 {
                     "$match": {
-                        "RWId": RWId
-                    }
-                },
-                {
-                    "$project": {
-                        "events_analyticts_docs": 0
+                        "RWId": ObjectId(RWId)
                     }
                 }
             ];
@@ -75,29 +68,28 @@ class EventsModel {
             };
             var pipeline = [
                 {
-                    "$lookup": {
-                        "from": "events_analyticts",
-                        "localField": "_id",
-                        "foreignField": "eventId",
-                        "as": "events_analyticts_docs"
+                    "$project": {
+                        "_id": 0,
+                        "events": "$$ROOT"
                     }
                 },
                 {
-                    "$addFields": {
-                        "events_analyticts_docs": {
-                            "$arrayElemAt": ["$events_analyticts_docs", 0]
-                        }
+                    "$lookup": {
+                        "localField": "events._id",
+                        "from": "events_analyticts",
+                        "foreignField": "eventId",
+                        "as": "events_analyticts"
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$events_analyticts",
+                        "preserveNullAndEmptyArrays": true
                     }
                 },
                 {
                     "$match": {
-                        "_id": ObjectId(`${data._id}`),
-                        "RWId": data.RWId
-                    }
-                },
-                {
-                    "$project": {
-                        "events_analyticts_docs": 0
+                        "_id": ObjectId(data._id)
                     }
                 }
             ];
@@ -122,28 +114,28 @@ class EventsModel {
             };
             var pipeline = [
                 {
-                    "$lookup": {
-                        "from": "events_analyticts",
-                        "localField": "_id",
-                        "foreignField": "eventId",
-                        "as": "events_analyticts_docs"
-                    }
-                },
-                {
-                    "$addFields": {
-                        "events_analyticts_docs": {
-                            "$arrayElemAt": ["$events_analyticts_docs", 0]
-                        }
-                    }
-                },
-                {
                     "$project": {
-                        "events_analyticts_docs": 0
+                        "_id": 0,
+                        "events": "$$ROOT"
+                    }
+                },
+                {
+                    "$lookup": {
+                        "localField": "events._id",
+                        "from": "events_analyticts",
+                        "foreignField": "eventId",
+                        "as": "events_analyticts"
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$events_analyticts",
+                        "preserveNullAndEmptyArrays": true
                     }
                 },
                 {
                     "$match": {
-                        // "createdAt": Date("28-02-2023")
+
                     }
                 }
             ];
@@ -168,23 +160,28 @@ class EventsModel {
             };
             var pipeline = [
                 {
-                    "$lookup": {
-                        "from": "events_analyticts",
-                        "localField": "_id",
-                        "foreignField": "eventId",
-                        "as": "events_analyticts_docs"
+                    "$project": {
+                        "_id": 0,
+                        "events": "$$ROOT"
                     }
                 },
                 {
-                    "$addFields": {
-                        "events_analyticts_docs": {
-                            "$arrayElemAt": ["$events_analyticts_docs", 0]
-                        }
+                    "$lookup": {
+                        "localField": "events._id",
+                        "from": "events_analyticts",
+                        "foreignField": "eventId",
+                        "as": "events_analyticts"
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$events_analyticts",
+                        "preserveNullAndEmptyArrays": true
                     }
                 },
                 {
                     "$match": {
-                        "RWId": data.RWId,
+                        "RWId": ObjectId(data.RWId),
                         "$or": [
                             {
                                 "event_name": new BSONRegExp(`^.*${keyword}.*$`, "i")
@@ -193,11 +190,6 @@ class EventsModel {
                                 "description": new BSONRegExp(`^.*${keyword}.*$`, "i")
                             }
                         ]
-                    }
-                },
-                {
-                    "$project": {
-                        "events_analyticts_docs": 0
                     }
                 }
             ];
@@ -220,38 +212,32 @@ class EventsModel {
             var options = {
                 allowDiskUse: true
             };
+
             var pipeline = [
                 {
+                    "$project": {
+                        "_id": 0,
+                        "events": "$$ROOT"
+                    }
+                },
+                {
                     "$lookup": {
+                        "localField": "events._id",
                         "from": "events_analyticts",
-                        "localField": "_id",
                         "foreignField": "eventId",
-                        "as": "events_analyticts_docs"
+                        "as": "events_analyticts"
                     }
                 },
                 {
-                    "$addFields": {
-                        "events_analyticts_docs": {
-                            "$arrayElemAt": ["$events_analyticts_docs", 0]
-                        }
-                    }
-                },
-                {
-                    "$replaceRoot": {
-                        "newRoot": {
-                            "$mergeObjects": ["$events_analyticts_docs", "$$ROOT"]
-                        }
+                    "$unwind": {
+                        "path": "$events_analyticts",
+                        "preserveNullAndEmptyArrays": true
                     }
                 },
                 {
                     "$match": {
                         "RWId": data.RWId,
                         "category": data.category
-                    }
-                },
-                {
-                    "$project": {
-                        "events_analyticts_docs": 0
                     }
                 }
             ];

@@ -37,34 +37,41 @@ class NewsCommentsmodel {
             };
             var pipeline = [
                 {
-                    "$lookup": {
-                        "from": "users_profile",
-                        "localField": "auth_users_id",
-                        "foreignField": "auth_users_id",
-                        "as": "users_profile_docs"
+                    "$project": {
+                        "_id": 0,
+                        "news_comments": "$$ROOT"
                     }
                 },
                 {
-                    "$addFields": {
-                        "users_profile_docs": {
-                            "$arrayElemAt": ["$users_profile_docs", 0]
-                        }
+                    "$lookup": {
+                        "localField": "news_comments.auth_users_id",
+                        "from": "users_profile",
+                        "foreignField": "auth_users_id",
+                        "as": "users_profile"
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$users_profile",
+                        "preserveNullAndEmptyArrays": true
+                    }
+                },
+                {
+                    "$project": {
+                        "news_comments._id": "$news_comments._id",
+                        "news_comments.auth_users_id": "$news_comments.auth_users_id",
+                        "news_comments.newsId": "$news_comments.newsId",
+                        "news_comments.text": "$news_comments.text",
+                        "news_comments.createdAt": "$news_comments.createdAt",
+                        "news_comments.updatedAt": "$news_comments.updatedAt",
+                        "users_profile.name": "$users_profile.name",
+                        "users_profile.photo": "$users_profile.photo",
+                        "_id": 0
                     }
                 },
                 {
                     "$match": {
                         "newsId": ObjectId(id_news)
-                    }
-                },
-                {
-                    "$project": {
-                        "_id": "$_id",
-                        "text": "$text",
-                        "eventId": "$eventId",
-                        "createdAt": "$createdAt",
-                        "updatedAt": "$updatedAt",
-                        "name": "$users_profile_docs.name",
-                        "photo": "$users_profile_docs.photo"
                     }
                 }
             ];
