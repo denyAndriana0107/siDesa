@@ -1,13 +1,17 @@
 const express = require("express");
 const app = express();
+const helmet = require("helmet");
+var sqlinjection = require('sql-injection');
 const cors = require("cors");
 const bp = require('body-parser');
 
 app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }));
-
+app.use(helmet());
+app.use(sqlinjection);
 const PORT = process.env.PORT || 5000;
 app.use(express.json());
+
 
 //===routes====//
 app.get("/", (req, res) => {
