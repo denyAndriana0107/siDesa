@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo-dev");
+const client = require("../../../config/db/Mongo");
 class TokenModel {
     constructor(params) {
         this.auth_users_id = params.auth_users_id,

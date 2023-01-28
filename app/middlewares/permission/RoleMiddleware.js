@@ -1,4 +1,4 @@
-const client = require("../../config/db/Mongo-dev");
+const client = require("../../config/db/Mongo");
 require("dotenv").config();
 module.exports = {
     isSuperAdmin: async (req, res, next) => {
