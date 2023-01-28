@@ -48,17 +48,17 @@ exports.readComments = (req, res, next) => {
         } else {
             var final_result = [];
             for (let index = 0; index < result.length; index++) {
-                var file_path = result[index]['photo'];
+                var file_path = result[index]['users_profile']['photo'];
                 helper.getUrl(file_path).then((success) => {
                     final_result.push({
-                        "_id": result[0]["_id"],
+                        "_id": result[0]['news_comments']["_id"],
                         "user": {
-                            "name": result[0]['name'],
-                            "photo": result[0]['photo']
+                            "name": result[0]['users_profile']['name'],
+                            "photo": success
                         },
-                        "text": result[0]['text'],
-                        "createdAt": result[0]['createdAt'],
-                        "updatedAt": result[0]['updatedAt']
+                        "text": result[0]['news_comments']['text'],
+                        "createdAt": result[0]['news_comments']['createdAt'],
+                        "updatedAt": result[0]['news_comments']['updatedAt']
                     });
                     if (index == result.length - 1) {
                         return res.status(200).send({

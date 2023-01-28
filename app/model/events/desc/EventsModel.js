@@ -43,7 +43,7 @@ class EventsModel {
                 },
                 {
                     "$match": {
-                        "RWId": ObjectId(RWId)
+                        "events.RWId": RWId
                     }
                 }
             ];
@@ -89,7 +89,8 @@ class EventsModel {
                 },
                 {
                     "$match": {
-                        "_id": ObjectId(data._id)
+                        "events._id": ObjectId(data._id),
+                        "events.RWId": data.RWId
                     }
                 }
             ];
@@ -181,13 +182,13 @@ class EventsModel {
                 },
                 {
                     "$match": {
-                        "RWId": ObjectId(data.RWId),
+                        "events.RWId": data.RWId,
                         "$or": [
                             {
-                                "event_name": new BSONRegExp(`^.*${keyword}.*$`, "i")
+                                "events.event_name": new BSONRegExp(`^.*${keyword}.*$`, "i")
                             },
                             {
-                                "description": new BSONRegExp(`^.*${keyword}.*$`, "i")
+                                "events.description": new BSONRegExp(`^.*${keyword}.*$`, "i")
                             }
                         ]
                     }
@@ -236,8 +237,8 @@ class EventsModel {
                 },
                 {
                     "$match": {
-                        "RWId": data.RWId,
-                        "category": data.category
+                        "events.RWId": data.RWId,
+                        "events.category": data.category
                     }
                 }
             ];

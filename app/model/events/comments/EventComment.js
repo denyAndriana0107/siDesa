@@ -72,7 +72,7 @@ class EventsCommentsmodel {
                 },
                 {
                     "$match": {
-                        "eventId": ObjectId(id_Events)
+                        "events_comments.eventId": ObjectId(id_Events)
                     }
                 }
             ];

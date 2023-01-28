@@ -18,20 +18,20 @@ exports.readNews = (req, res, next) => {
         } else {
             var final_result = [];
             for (let index = 0; index < result.length; index++) {
-                let file_path = result[index]['photo'];
+                let file_path = result[index]['news']['photo'];
                 helper.getUrl(file_path).then((success) => {
                     final_result.push({
-                        _id: result[index]['_id'],
-                        title: result[index]['title'],
-                        description: result[index]['description'],
-                        category: result[index]['category'],
+                        _id: result[index]['news']['_id'],
+                        title: result[index]['news']['title'],
+                        description: result[index]['news']['description'],
+                        category: result[index]['news']['category'],
                         photo: success,
                         analyticts: {
-                            likes_count: result[index]['likes_count'],
-                            views_count: result[index]['views_count']
+                            likes_count: result[index]['news_analyticts']['likes_count'],
+                            views_count: result[index]['news_analyticts']['views_count']
                         },
-                        createdAt: result[index]['createdAt'],
-                        updatedAt: result[index]['updatedAt']
+                        createdAt: result[index]['news']['createdAt'],
+                        updatedAt: result[index]['news']['updatedAt']
                     });
                     if (index == result.length - 1) {
                         return res.status(200).send({
@@ -70,21 +70,21 @@ exports.readNewsById = (req, res, next) => {
                         message: error
                     });
                 } else {
-                    let file_path = result[0]['photo'];
+                    let file_path = result[0]['news']['photo'];
                     helper.getUrl(file_path).then((success) => {
                         var final_result = [];
                         final_result.push({
-                            _id: result[0]['_id'],
-                            title: result[0]['title'],
-                            description: result[0]['description'],
-                            category: result[0]['category'],
+                            _id: result[0]['news']['_id'],
+                            title: result[0]['news']['title'],
+                            description: result[0]['news']['description'],
+                            category: result[0]['news']['category'],
                             photo: success,
                             analyticts: {
-                                likes_count: result[0]['likes_count'],
-                                views_count: result[0]['views_count']
+                                likes_count: result[0]['news_analyticts']['likes_count'],
+                                views_count: result[0]['news_analyticts']['views_count']
                             },
-                            createdAt: result[0]['createdAt'],
-                            updatedAt: result[0]['updatedAt']
+                            createdAt: result[0]['news']['createdAt'],
+                            updatedAt: result[0]['news']['updatedAt']
                         });
                         return res.status(200).send({
                             message: final_result
@@ -117,20 +117,20 @@ exports.readNewsByCategory = (req, res, next) => {
         } else {
             var final_result = [];
             for (let index = 0; index < result.length; index++) {
-                let file_path = result[index]['photo'];
+                let file_path = result[index]['news']['photo'];
                 helper.getUrl(file_path).then((success) => {
                     final_result.push({
-                        _id: result[index]['_id'],
-                        title: result[index]['title'],
-                        description: result[index]['description'],
-                        category: result[index]['category'],
+                        _id: result[index]['news']['_id'],
+                        title: result[index]['news']['title'],
+                        description: result[index]['news']['description'],
+                        category: result[index]['news']['category'],
                         photo: success,
                         analyticts: {
-                            likes_count: result[index]['likes_count'],
-                            views_count: result[index]['views_count']
+                            likes_count: result[index]['news_analyticts']['likes_count'],
+                            views_count: result[index]['news_analyticts']['views_count']
                         },
-                        createdAt: result[index]['createdAt'],
-                        updatedAt: result[index]['updatedAt']
+                        createdAt: result[index]['news']['createdAt'],
+                        updatedAt: result[index]['news']['updatedAt']
                     });
                     if (index == result.length - 1) {
                         return res.status(200).send({

@@ -20,15 +20,15 @@ exports.read = (req, res, next) => {
                         message: error
                     });
                 } else {
-                    let file_path = result[0]['photo'];
+                    let file_path = result[0]['users_profile']['photo'];
                     helper.getUrl(file_path).then((data) => {
                         var final_result = [];
                         final_result.push({
-                            _id: result[0]['_id'],
-                            name: result[0]['name'],
-                            phone: result[0]['phone'],
+                            _id: result[0]['users_profile']['_id'],
+                            name: result[0]['users_profile']['name'],
+                            phone: result[0]['auth_users']['phone'],
                             photo: data,
-                            address: result2[0]['address'],
+                            address: result2[0]['auth_users']['address'],
 
                         });
                         return res.status(200).send({

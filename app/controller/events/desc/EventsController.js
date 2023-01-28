@@ -55,21 +55,21 @@ exports.read = (req, res, next) => {
         } else {
             var final_result = [];
             for (let index = 0; index < result.length; index++) {
-                let file_path = result[index]['photo'];
+                let file_path = result[index]['events']['photo'];
                 helper.getUrl(file_path).then((success) => {
                     final_result.push({
-                        _id: result[index]['_id'],
-                        event_name: result[index]['event_name'],
-                        category: result[index]['category'],
-                        description: result[index]['description'],
+                        _id: result[index]['events']['_id'],
+                        event_name: result[index]['events']['event_name'],
+                        category: result[index]['events']['category'],
+                        description: result[index]['events']['description'],
                         photo: success,
                         analyticts: {
-                            likes_count: result[index]['likes_count'],
-                            views_count: result[index]['views_count'],
-                            shares_count: result[index]['shares_count']
+                            likes_count: result[index]['events_analyticts']['likes_count'],
+                            views_count: result[index]['events_analyticts']['views_count'],
+                            shares_count: result[index]['events_analyticts']['shares_count']
                         },
-                        createdAt: result[index]['createdAt'],
-                        updatedAt: result[index]['updatedAt']
+                        createdAt: result[index]['events']['createdAt'],
+                        updatedAt: result[index]['events']['updatedAt']
                     });
                     if (index == result.length - 1) {
                         return res.status(200).send({
@@ -102,22 +102,22 @@ exports.readById = (req, res, next) => {
                         message: error + "oi"
                     });
                 } else {
-                    let file_path = result[0]['photo'];
+                    let file_path = result[0]['events']['photo'];
                     var final_result = [];
                     helper.getUrl(file_path).then((success) => {
                         final_result.push({
-                            _id: result[0]['_id'],
-                            event_name: result[0]['event_name'],
-                            category: result[0]['category'],
-                            description: result[0]['description'],
+                            _id: result[0]['events']['_id'],
+                            event_name: result[0]['events']['event_name'],
+                            category: result[0]['events']['category'],
+                            description: result[0]['events']['description'],
                             photo: success,
                             analyticts: {
-                                likes_count: result[0]['likes_count'],
-                                views_count: result[0]['views_count'],
-                                shares_count: result[0]['shares_count']
+                                likes_count: result[0]['events_analyticts']['likes_count'],
+                                views_count: result[0]['events_analyticts']['views_count'],
+                                shares_count: result[0]['events_analyticts']['shares_count']
                             },
-                            createdAt: result[0]['createdAt'],
-                            updatedAt: result[0]['updatedAt']
+                            createdAt: result[0]['events']['createdAt'],
+                            updatedAt: result[0]['events']['updatedAt']
                         });
                         return res.status(200).send({
                             message: final_result
@@ -151,21 +151,21 @@ exports.readByCategory = (req, res, next) => {
         } else {
             var final_result = [];
             for (let index = 0; index < result.length; index++) {
-                let file_path = result[index]['photo'];
+                let file_path = result[index]['events']['photo'];
                 helper.getUrl(file_path).then((success) => {
                     final_result.push({
-                        _id: result[index]['_id'],
-                        event_name: result[index]['event_name'],
-                        category: result[index]['category'],
-                        description: result[index]['description'],
+                        _id: result[index]['events']['_id'],
+                        event_name: result[index]['events']['event_name'],
+                        category: result[index]['events']['category'],
+                        description: result[index]['events']['description'],
                         photo: success,
                         analyticts: {
-                            likes_count: result[index]['likes_count'],
-                            views_count: result[index]['views_count'],
-                            shares_count: result[index]['shares_count']
+                            likes_count: result[index]['events_analyticts']['likes_count'],
+                            views_count: result[index]['events_analyticts']['views_count'],
+                            shares_count: result[index]['events_analyticts']['shares_count']
                         },
-                        createdAt: result[index]['createdAt'],
-                        updatedAt: result[index]['updatedAt']
+                        createdAt: result[index]['events']['createdAt'],
+                        updatedAt: result[index]['events']['updatedAt']
                     });
                     if (index == result.length - 1) {
                         return res.status(200).send({
@@ -196,31 +196,35 @@ exports.readByMonth = (req, res, next) => {
                 message: error
             });
         } else {
-            let file_path = result[0]['photo'];
             var final_result = [];
-            helper.getUrl(file_path).then((success) => {
-                final_result.push({
-                    _id: result[0]['_id'],
-                    event_name: result[0]['event_name'],
-                    category: result[0]['category'],
-                    description: result[0]['description'],
-                    photo: success,
-                    analyticts: {
-                        likes_count: result[0]['likes_count'],
-                        views_count: result[0]['views_count'],
-                        shares_count: result[0]['shares_count']
-                    },
-                    createdAt: result[0]['createdAt'],
-                    updatedAt: result[0]['updatedAt']
+            for (let index = 0; index < result.length; index++) {
+                let file_path = result[index]['events']['photo'];
+                helper.getUrl(file_path).then((success) => {
+                    final_result.push({
+                        _id: result[index]['events']['_id'],
+                        event_name: result[index]['events']['event_name'],
+                        category: result[index]['events']['category'],
+                        description: result[index]['events']['description'],
+                        photo: success,
+                        analyticts: {
+                            likes_count: result[index]['events_analyticts']['likes_count'],
+                            views_count: result[index]['events_analyticts']['views_count'],
+                            shares_count: result[index]['events_analyticts']['shares_count']
+                        },
+                        createdAt: result[index]['events']['createdAt'],
+                        updatedAt: result[index]['events']['updatedAt']
+                    });
+                    if (index == result.length - 1) {
+                        return res.status(200).send({
+                            message: final_result
+                        });
+                    }
+                }).catch((error) => {
+                    return res.status(500).send({
+                        message: error
+                    });
                 });
-                return res.status(200).send({
-                    message: final_result
-                });
-            }).catch((error) => {
-                return res.status(500).send({
-                    message: error.message
-                });
-            });
+            }
         }
     });
 }
@@ -253,31 +257,35 @@ exports.searchEvent = (req, res, next) => {
                 message: error
             });
         } else {
-            let file_path = result[0]['photo'];
             var final_result = [];
-            helper.getUrl(file_path).then((success) => {
-                final_result.push({
-                    _id: result[0]['_id'],
-                    event_name: result[0]['event_name'],
-                    category: result[0]['category'],
-                    description: result[0]['description'],
-                    photo: success,
-                    analyticts: {
-                        likes_count: result[0]['likes_count'],
-                        views_count: result[0]['views_count'],
-                        shares_count: result[0]['shares_count']
-                    },
-                    createdAt: result[0]['createdAt'],
-                    updatedAt: result[0]['updatedAt']
+            for (let index = 0; index < result.length; index++) {
+                let file_path = result[index]['events']['photo'];
+                helper.getUrl(file_path).then((success) => {
+                    final_result.push({
+                        _id: result[index]['events']['_id'],
+                        event_name: result[index]['events']['event_name'],
+                        category: result[index]['events']['category'],
+                        description: result[index]['events']['description'],
+                        photo: success,
+                        analyticts: {
+                            likes_count: result[index]['events_analyticts']['likes_count'],
+                            views_count: result[index]['events_analyticts']['views_count'],
+                            shares_count: result[index]['events_analyticts']['shares_count']
+                        },
+                        createdAt: result[index]['events']['createdAt'],
+                        updatedAt: result[index]['events']['updatedAt']
+                    });
+                    if (index == result.length - 1) {
+                        return res.status(200).send({
+                            message: final_result
+                        });
+                    }
+                }).catch((error) => {
+                    return res.status(500).send({
+                        message: error
+                    });
                 });
-                return res.status(200).send({
-                    message: final_result
-                });
-            }).catch((error) => {
-                return res.status(500).send({
-                    message: error.message
-                });
-            });
+            }
         }
     });
 }

@@ -89,14 +89,14 @@ class NewsModel {
                 },
                 {
                     "$match": {
-                        "_id": new ObjectId(id_news)
+                        "news._id": ObjectId(id_news)
                     }
-                },
+                }
             ];
 
             const cursor = collection.aggregate(pipeline, options);
             const allValues = await cursor.toArray();
-
+            console.log(allValues);
             var array_data = [];
             array_data = allValues;
             if (array_data.length > 0) {
@@ -141,8 +141,7 @@ class NewsModel {
                 },
                 {
                     "$match": {
-                        "RWId": new ObjectId(data.RWId),
-                        "category": data.category
+                        "news.category": data.category
                     }
                 },
             ];

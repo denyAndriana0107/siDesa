@@ -71,7 +71,7 @@ class NewsCommentsmodel {
                 },
                 {
                     "$match": {
-                        "newsId": ObjectId(id_news)
+                        "news_comments.newsId": ObjectId(id_news)
                     }
                 }
             ];

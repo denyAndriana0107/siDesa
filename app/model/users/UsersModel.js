@@ -35,13 +35,14 @@ class UsersModel {
                 },
                 {
                     "$match": {
-                        "auth_users_id": ObjectId(id)
+                        "users_profile.auth_users_id": ObjectId(id)
                     }
                 },
                 {
                     "$project": {
                         "users_profile.name": "$users_profile.name",
                         "users_profile.photo": "$users_profile.photo",
+                        "users_profile.auth_users_id": "$users_profile.auth_users_id",
                         "auth_users._id": "$auth_users._id",
                         "auth_users.phone": "$auth_users.phone",
                         "_id": 0
