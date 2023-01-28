@@ -64,7 +64,6 @@ class NewsCommentsmodel {
             ];
             const cursor = db.aggregate(pipeline, options).sort(sort).limit(limit);
             const allValues = await cursor.toArray();
-            console.log(allValues);
             var array_data = [];
             array_data = allValues;
             if (array_data.length > 0) {
