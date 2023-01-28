@@ -1,6 +1,7 @@
 const { ObjectId } = require("mongodb");
 const NewsCommentsmodel = require("../../../model/news/comments/NewsCommentsModel");
 const NewsModel = require("../../../model/news/desc/NewsModel");
+const helper = require("../../../helper/upload/UploadPhoto");
 
 exports.insertComments = (req, res, next) => {
     const data = new NewsCommentsmodel({
@@ -45,9 +46,32 @@ exports.readComments = (req, res, next) => {
                 message: error
             });
         } else {
-            return res.status(200).send({
-                message: result
-            });
+            var final_result = [];
+            for (let index = 0; index < result.length; index++) {
+                var file_path = result[index]['photo'];
+                helper.getUrl(file_path).then((success) => {
+                    final_result.push({
+                        "_id": result[0]["_id"],
+                        "user": {
+                            "name": result[0]['name'],
+                            "photo": result[0]['photo']
+                        },
+                        "text": result[0]['text'],
+                        "createdAt": result[0]['createdAt'],
+                        "updatedAt": result[0]['updatedAt']
+                    });
+                    if (index == result.length - 1) {
+                        return res.status(200).send({
+                            message: final_result
+                        });
+                    }
+                }).catch((error) => {
+                    return res.status(500).send({
+                        message: error
+                    });
+                });
+
+            }
         }
     });
 }

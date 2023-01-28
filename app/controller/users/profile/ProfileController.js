@@ -1,31 +1,45 @@
 const ProfileModel = require("../../../model/users/UsersModel");
+const OrganizationalProfile = require("../../../model/organizational/profile/OrganizationalProfileModel");
 const helper = require("../../../helper/upload/UploadPhoto");
 
 exports.read = (req, res, next) => {
     ProfileModel.read(req.user.userId, (error, result) => {
         if (error) {
+            if (error.kind === "not_found") {
+                return res.status(404).send({
+                    message: 'not_found'
+                });
+            }
             return res.status(500).send({
                 message: error
             });
         } else {
-            let file_path = result[0]['photo'];
-            helper.getUrl(file_path).then((data) => {
-                var final_result = [];
-                final_result.push({
-                    _id: result[0]['_id'],
-                    name: result[0]['name'],
-                    photo: data,
-                    RWId: result[0]['RWId'],
-                    auth_users_id: result[0]['auth_users_id'],
-                    address: result[0]['address']
-                });
-                return res.status(200).send({
-                    message: final_result
-                });
-            }).catch((error) => {
-                return res.status(500).send({
-                    message: error
-                });
+            OrganizationalProfile.read(req.user.RWId, (error, result2) => {
+                if (error) {
+                    return res.status(500).send({
+                        message: error
+                    });
+                } else {
+                    let file_path = result[0]['photo'];
+                    helper.getUrl(file_path).then((data) => {
+                        var final_result = [];
+                        final_result.push({
+                            _id: result[0]['_id'],
+                            name: result[0]['name'],
+                            phone: result[0]['phone'],
+                            photo: data,
+                            address: result2[0]['address'],
+
+                        });
+                        return res.status(200).send({
+                            message: final_result
+                        });
+                    }).catch((error) => {
+                        return res.status(500).send({
+                            message: error
+                        });
+                    });
+                }
             });
         }
     });
@@ -34,9 +48,7 @@ exports.insert = (req, res, next) => {
     const data = new ProfileModel({
         "name": req.body.name,
         "photo": "default.jpg",
-        "auth_users_id": req.user.userId,
-        "RWId": req.user.RWId,
-        "address": req.body.address
+        "auth_users_id": req.user.userId
     });
     ProfileModel.insert(data, (error, result) => {
         if (error) {
@@ -81,8 +93,7 @@ exports.uploadPhoto = (req, res, next) => {
 }
 exports.update = (req, res, next) => {
     const data = new ProfileModel({
-        "name": req.body.name,
-        "address": req.body.address
+        "name": req.body.name
     });
     ProfileModel.update(req.user.userId, data, (error, result) => {
         if (error) {

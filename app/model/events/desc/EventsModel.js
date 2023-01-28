@@ -1,4 +1,4 @@
-const client = require("../../../config/db/Mongo");
+const client = require("../../../config/db/Mongo-dev");
 const { ObjectId, BSONRegExp } = require("mongodb");
 class EventsModel {
     constructor(params) {
@@ -17,10 +17,44 @@ class EventsModel {
             const db = await connection();
             const limit = 15;
             const sort = { createdAt: -1 };
-            const query = {
-                "RWId": RWId
+            var options = {
+                allowDiskUse: true
             };
-            const cursor = await db.find(query).limit(limit).sort(sort);
+            var pipeline = [
+                {
+                    "$lookup": {
+                        "from": "events_analyticts",
+                        "localField": "_id",
+                        "foreignField": "eventId",
+                        "as": "events_analyticts_docs"
+                    }
+                },
+                {
+                    "$addFields": {
+                        "events_analyticts_docs": {
+                            "$arrayElemAt": ["$events_analyticts_docs", 0]
+                        }
+                    }
+                },
+                {
+                    "$replaceRoot": {
+                        "newRoot": {
+                            "$mergeObjects": ["$events_analyticts_docs", "$$ROOT"]
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "RWId": RWId
+                    }
+                },
+                {
+                    "$project": {
+                        "events_analyticts_docs": 0
+                    }
+                }
+            ];
+            const cursor = db.aggregate(pipeline, options).limit(limit).sort(sort);
             const final_result = await cursor.toArray();
             if (final_result.length > 0) {
                 return result(null, final_result);
@@ -33,13 +67,48 @@ class EventsModel {
             await client.close();
         }
     }
-    static async readById(id, result) {
+    static async readById(data, result) {
         try {
             const db = await connection();
-            const filter = {
-                "_id": ObjectId(id)
+            var options = {
+                allowDiskUse: true
             };
-            const cursor = await db.find(filter);
+            var pipeline = [
+                {
+                    "$lookup": {
+                        "from": "events_analyticts",
+                        "localField": "_id",
+                        "foreignField": "eventId",
+                        "as": "events_analyticts_docs"
+                    }
+                },
+                {
+                    "$addFields": {
+                        "events_analyticts_docs": {
+                            "$arrayElemAt": ["$events_analyticts_docs", 0]
+                        }
+                    }
+                },
+                {
+                    "$replaceRoot": {
+                        "newRoot": {
+                            "$mergeObjects": ["$events_analyticts_docs", "$$ROOT"]
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "_id": ObjectId(`${data._id}`),
+                        "RWId": data.RWId
+                    }
+                },
+                {
+                    "$project": {
+                        "events_analyticts_docs": 0
+                    }
+                }
+            ];
+            const cursor = db.aggregate(pipeline, options);
             const final_result = await cursor.toArray();
             if (final_result.length > 0) {
                 return result(null, final_result);
@@ -55,15 +124,49 @@ class EventsModel {
     static async readByMont(month, result) {
         try {
             const db = await connection();
-            const filter = {
-                "date": month
+            var options = {
+                allowDiskUse: true
             };
-            const cursor = db.find(filter);
+            var pipeline = [
+                {
+                    "$lookup": {
+                        "from": "events_analyticts",
+                        "localField": "_id",
+                        "foreignField": "eventId",
+                        "as": "events_analyticts_docs"
+                    }
+                },
+                {
+                    "$addFields": {
+                        "events_analyticts_docs": {
+                            "$arrayElemAt": ["$events_analyticts_docs", 0]
+                        }
+                    }
+                },
+                {
+                    "$replaceRoot": {
+                        "newRoot": {
+                            "$mergeObjects": ["$events_analyticts_docs", "$$ROOT"]
+                        }
+                    }
+                },
+                {
+                    "$project": {
+                        "events_analyticts_docs": 0
+                    }
+                },
+                {
+                    "$match": {
+                        // "createdAt": Date("28-02-2023")
+                    }
+                }
+            ];
+            const cursor = db.aggregate(pipeline, options);
             const final_result = await cursor.toArray();
             if (final_result.length > 0) {
                 return result(null, final_result);
             } else {
-                return result({ kind: "not_found" });
+                return result({ kind: "data_not_found" });
             }
         } catch (error) {
             return result(error.message);
@@ -74,18 +177,52 @@ class EventsModel {
     static async searchEvent(data, keyword, result) {
         try {
             const db = await connection();
-            const query = {
-                "RWId": data.RWId,
-                "$or": [
-                    {
-                        "event_name": new BSONRegExp(`^.*${keyword}.*$`, "i")
-                    },
-                    {
-                        "description": new BSONRegExp(`^.*${keyword}.*$`, "i")
-                    }
-                ]
+            var options = {
+                allowDiskUse: true
             };
-            const cursor = db.find(query);
+            var pipeline = [
+                {
+                    "$lookup": {
+                        "from": "events_analyticts",
+                        "localField": "_id",
+                        "foreignField": "eventId",
+                        "as": "events_analyticts_docs"
+                    }
+                },
+                {
+                    "$addFields": {
+                        "events_analyticts_docs": {
+                            "$arrayElemAt": ["$events_analyticts_docs", 0]
+                        }
+                    }
+                },
+                {
+                    "$replaceRoot": {
+                        "newRoot": {
+                            "$mergeObjects": ["$events_analyticts_docs", "$$ROOT"]
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "RWId": data.RWId,
+                        "$or": [
+                            {
+                                "event_name": new BSONRegExp(`^.*${keyword}.*$`, "i")
+                            },
+                            {
+                                "description": new BSONRegExp(`^.*${keyword}.*$`, "i")
+                            }
+                        ]
+                    }
+                },
+                {
+                    "$project": {
+                        "events_analyticts_docs": 0
+                    }
+                }
+            ];
+            const cursor = db.aggregate(pipeline, options);
             const final_result = await cursor.toArray();
             if (final_result.length > 0) {
                 return result(null, final_result);
@@ -101,11 +238,45 @@ class EventsModel {
     static async readByCategory(data, result) {
         try {
             const db = await connection();
-            const query = {
-                "RWId": data.RWId,
-                "category": data.category
-            }
-            const cursor = db.find(query);
+            var options = {
+                allowDiskUse: true
+            };
+            var pipeline = [
+                {
+                    "$lookup": {
+                        "from": "events_analyticts",
+                        "localField": "_id",
+                        "foreignField": "eventId",
+                        "as": "events_analyticts_docs"
+                    }
+                },
+                {
+                    "$addFields": {
+                        "events_analyticts_docs": {
+                            "$arrayElemAt": ["$events_analyticts_docs", 0]
+                        }
+                    }
+                },
+                {
+                    "$replaceRoot": {
+                        "newRoot": {
+                            "$mergeObjects": ["$events_analyticts_docs", "$$ROOT"]
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "RWId": data.RWId,
+                        "category": data.category
+                    }
+                },
+                {
+                    "$project": {
+                        "events_analyticts_docs": 0
+                    }
+                }
+            ];
+            const cursor = db.aggregate(pipeline, options);
             const final_result = await cursor.toArray();
             if (final_result.length > 0) {
                 return result(null, final_result);

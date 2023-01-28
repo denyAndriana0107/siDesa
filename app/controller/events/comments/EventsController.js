@@ -1,18 +1,21 @@
 const EventsCommentsmodel = require("../../../model/events/comments/EventComment");
 const EventsModel = require("../../../model/events/desc/EventsModel");
+const helper = require("../../../helper/upload/UploadPhoto");
 
 exports.insertComments = (req, res, next) => {
-    const data = new EventsCommentsmodel({
+    const data = {
+        _id: req.params.id_event,
         text: req.body.text,
+        RWId: req.user.RWId,
         createdAt: new Date(),
         updatedAt: null,
         eventId: req.params.id_event,
         auth_users_id: req.user.userId
-    });
-    EventsModel.readById(data.eventId, (error, result) => {
+    };
+    EventsModel.readById(data, (error, result) => {
         if (error) {
             return res.status(500).send({
-                message: error
+                message: error + "oi"
             });
         } else {
             EventsCommentsmodel.insert(data, (error, result) => {
@@ -41,9 +44,32 @@ exports.readComments = (req, res, next) => {
                 message: error
             });
         } else {
-            return res.status(200).send({
-                message: result
-            });
+            var final_result = [];
+            for (let index = 0; index < result.length; index++) {
+                var file_path = result[index]['photo'];
+                helper.getUrl(file_path).then((success) => {
+                    final_result.push({
+                        "_id": result[0]["_id"],
+                        "user": {
+                            "name": result[0]['name'],
+                            "photo": result[0]['photo']
+                        },
+                        "text": result[0]['text'],
+                        "createdAt": result[0]['createdAt'],
+                        "updatedAt": result[0]['updatedAt']
+                    });
+                    if (index == result.length - 1) {
+                        return res.status(200).send({
+                            message: final_result
+                        });
+                    }
+                }).catch((error) => {
+                    return res.status(500).send({
+                        message: error
+                    });
+                });
+
+            }
         }
     });
 }

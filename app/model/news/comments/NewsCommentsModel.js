@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo");
+const client = require("../../../config/db/Mongo-dev");
 class NewsCommentsmodel {
     constructor(params) {
         this._id = params._id,
@@ -32,8 +32,43 @@ class NewsCommentsmodel {
             const db = await connection();
             const limit = 20;
             const sort = { createdAt: -1 };
-            const query = { "newsId": ObjectId(id_news) };
-            const cursor = db.find(query).sort(sort).limit(limit);
+            var options = {
+                allowDiskUse: true
+            };
+            var pipeline = [
+                {
+                    "$lookup": {
+                        "from": "users_profile",
+                        "localField": "auth_users_id",
+                        "foreignField": "auth_users_id",
+                        "as": "users_profile_docs"
+                    }
+                },
+                {
+                    "$addFields": {
+                        "users_profile_docs": {
+                            "$arrayElemAt": ["$users_profile_docs", 0]
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "newsId": ObjectId(id_news)
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": "$_id",
+                        "text": "$text",
+                        "eventId": "$eventId",
+                        "createdAt": "$createdAt",
+                        "updatedAt": "$updatedAt",
+                        "name": "$users_profile_docs.name",
+                        "photo": "$users_profile_docs.photo"
+                    }
+                }
+            ];
+            const cursor = db.aggregate(pipeline, options).sort(sort).limit(limit);
             const allValues = await cursor.toArray();
 
             var array_data = [];

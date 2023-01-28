@@ -24,7 +24,12 @@ exports.readNews = (req, res, next) => {
                         _id: result[index]['_id'],
                         title: result[index]['title'],
                         description: result[index]['description'],
+                        category: result[index]['category'],
                         photo: success,
+                        analyticts: {
+                            likes_count: result[index]['likes_count'],
+                            views_count: result[index]['views_count']
+                        },
                         createdAt: result[index]['createdAt'],
                         updatedAt: result[index]['updatedAt']
                     });
@@ -74,7 +79,12 @@ exports.readNewsById = (req, res, next) => {
                             _id: result[0]['_id'],
                             title: result[0]['title'],
                             description: result[0]['description'],
+                            category: result[0]['category'],
                             photo: success,
+                            analyticts: {
+                                likes_count: result[0]['likes_count'],
+                                views_count: result[0]['views_count']
+                            },
                             createdAt: result[0]['createdAt'],
                             updatedAt: result[0]['updatedAt']
                         });
@@ -119,6 +129,7 @@ exports.insertNews = async (req, res, next) => {
             "_id": _id,
             "title": req.body.title,
             "description": req.body.description,
+            "category": req.body.category,
             "photo": success,
             "createdAt": new Date(),
             "updatedAt": null
@@ -208,6 +219,7 @@ exports.updateNews = (req, res, next) => {
             const data = new NewsModel({
                 "title": req.body.title,
                 "description": req.body.description,
+                "category": req.body.category,
                 "photo": success,
                 "updatedAt": new Date()
             });
@@ -236,6 +248,7 @@ exports.updateNews = (req, res, next) => {
         const data = new NewsModel({
             "title": req.body.title,
             "description": req.body.description,
+            "category": req.body.category,
             "updatedAt": new Date()
         });
         NewsModel.update(_id, data, (error, result) => {

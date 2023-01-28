@@ -1,29 +1,56 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../config/db/Mongo");
+const client = require("../../config/db/Mongo-dev");
 class UsersModel {
     constructor(params) {
         this.name = params.name,
             this.photo = params.photo,
-            this.auth_users_id = params.auth_users_id,
-            this.RWId = params.RWId,
-            this.address = params.address;
+            this.auth_users_id = params.auth_users_id
     }
     static async read(id, result) {
         try {
             const db = await connection();
-            const query = {
-                "auth_users_id": ObjectId(id)
+            var options = {
+                allowDiskUse: true
             };
-            const cursor = await db.find(query);
+            var pipeline = [
+                {
+                    "$lookup": {
+                        "from": "auth_users",
+                        "localField": "auth_users_id",
+                        "foreignField": "_id",
+                        "as": "auth_users_docs"
+                    }
+                },
+                {
+                    "$addFields": {
+                        "auth_users_docs": {
+                            "$arrayElemAt": ["$auth_users_docs", 0]
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "auth_users_id": ObjectId(id)
+                    }
+                },
+                {
+                    "$project": {
+                        _id: "$auth_users_docs._id",
+                        phone: "$auth_users_docs.phone",
+                        name: "$name",
+                        photo: "$photo",
+                    }
+                }
+            ];
+            const cursor = db.aggregate(pipeline, options);
             const allValues = await cursor.toArray();
-
             if (allValues.length > 0) {
                 return result(null, allValues);
             } else {
                 return result({ kind: "not_found" });
             }
         } catch (error) {
-            return result(error);
+            return result(error.message);
         } finally {
             await client.close();
         }
@@ -42,9 +69,7 @@ class UsersModel {
                 const doc = {
                     "name": data.name,
                     "photo": data.photo,
-                    "auth_users_id": ObjectId(data.auth_users_id),
-                    "RWId": data.RWId,
-                    "address": data.address
+                    "auth_users_id": ObjectId(data.auth_users_id)
                 };
                 await db.insertOne(doc);
                 return result(null);
@@ -63,8 +88,7 @@ class UsersModel {
             };
             const doc = {
                 $set: {
-                    name: data.name,
-                    address: data.address
+                    name: data.name
                 }
             };
             const final_result = await db.updateOne(filter, doc);

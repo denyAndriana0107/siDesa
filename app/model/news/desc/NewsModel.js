@@ -1,10 +1,11 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo");
+const client = require("../../../config/db/Mongo-dev");
 class NewsModel {
     constructor(data) {
         this._id = data._id,
             this.title = data.title,
             this.description = data.description,
+            this.category = data.category,
             this.photo = data.photo,
             this.createdAt = data.createdAt,
             this.updatedAt = data.updatedAt;
@@ -17,10 +18,42 @@ class NewsModel {
 
             const limit = 15;
             const sort = { createdAt: -1 };
-            const query = {};
-            const cursor = collection.find(query).sort(sort).limit(limit);
+            var options = {
+                allowDiskUse: true
+            };
+            var pipeline = [
+                {
+                    "$lookup": {
+                        "from": "news_analyticts",
+                        "localField": "_id",
+                        "foreignField": "newsId",
+                        "as": "news_analyticts_docs"
+                    }
+                },
+                {
+                    "$addFields": {
+                        "news_analyticts_docs": {
+                            "$arrayElemAt": ["$news_analyticts_docs", 0]
+                        }
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": "$_id",
+                        "newsId": "$newsId",
+                        "title": "$title",
+                        "description": "$description",
+                        "category": "$category",
+                        "photo": "$photo",
+                        "createdAt": "$createdAt",
+                        "updatedAt": "$updatedAt",
+                        "likes_count": "$news_analyticts_docs.likes_count",
+                        "views_count": "$news_analyticts_docs.views_count"
+                    }
+                }
+            ];
+            const cursor = collection.aggregate(pipeline, options).sort(sort).limit(limit);
             const allValues = await cursor.toArray();
-
             var array_data = [];
             array_data = allValues;
             if (array_data.length > 0) {
@@ -39,9 +72,47 @@ class NewsModel {
             await client.connect();
             const database = client.db('siDesa');
             const collection = database.collection('news');
+            var options = {
+                allowDiskUse: true
+            };
+            var pipeline = [
+                {
+                    "$lookup": {
+                        "from": "news_analyticts",
+                        "localField": "_id",
+                        "foreignField": "newsId",
+                        "as": "news_analyticts_docs"
+                    }
+                },
+                {
+                    "$addFields": {
+                        "news_analyticts_docs": {
+                            "$arrayElemAt": ["$news_analyticts_docs", 0]
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "_id": new ObjectId(id_news)
+                    }
 
-            const query = { "_id": new ObjectId(id_news) };
-            const cursor = collection.find(query);
+                },
+                {
+                    "$project": {
+                        "_id": "$_id",
+                        "newsId": "$newsId",
+                        "title": "$title",
+                        "description": "$description",
+                        "category": "$category",
+                        "photo": "$photo",
+                        "createdAt": "$createdAt",
+                        "updatedAt": "$updatedAt",
+                        "likes_count": "$news_analyticts_docs.likes_count",
+                        "views_count": "$news_analyticts_docs.views_count"
+                    }
+                }
+            ];
+            const cursor = collection.aggregate(pipeline, options);
             const allValues = await cursor.toArray();
 
             var array_data = [];
@@ -67,6 +138,7 @@ class NewsModel {
                 "_id": data._id,
                 "title": data.title,
                 "description": data.description,
+                "category": data.category,
                 "photo": data.photo,
                 "createdAt": data.createdAt,
                 "updatedAt": data.updatedAt
@@ -97,6 +169,7 @@ class NewsModel {
                         $set: {
                             title: data.title,
                             description: data.description,
+                            category: data.category,
                             photo: data.photo,
                             updatedAt: data.updatedAt
                         },
@@ -112,6 +185,7 @@ class NewsModel {
                         $set: {
                             title: data.title,
                             description: data.description,
+                            category: data.category,
                             updatedAt: data.updatedAt
                         },
                     };

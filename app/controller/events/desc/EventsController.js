@@ -63,6 +63,11 @@ exports.read = (req, res, next) => {
                         category: result[index]['category'],
                         description: result[index]['description'],
                         photo: success,
+                        analyticts: {
+                            likes_count: result[index]['likes_count'],
+                            views_count: result[index]['views_count'],
+                            shares_count: result[index]['shares_count']
+                        },
                         createdAt: result[index]['createdAt'],
                         updatedAt: result[index]['updatedAt']
                     });
@@ -77,6 +82,145 @@ exports.read = (req, res, next) => {
                     });
                 });
             }
+        }
+    });
+}
+exports.readById = (req, res, next) => {
+    const data = new EventsModel({
+        "RWId": req.user.RWId,
+        "_id": req.params.id
+    });
+    EventsModel.readById(data, (error, result) => {
+        if (error) {
+            return res.status(500).send({
+                message: error
+            });
+        } else {
+            AnalytictsModel.add_view(req.params.id, (error, result2) => {
+                if (error) {
+                    return res.status(500).send({
+                        message: error + "oi"
+                    });
+                } else {
+                    let file_path = result[0]['photo'];
+                    var final_result = [];
+                    helper.getUrl(file_path).then((success) => {
+                        final_result.push({
+                            _id: result[0]['_id'],
+                            event_name: result[0]['event_name'],
+                            category: result[0]['category'],
+                            description: result[0]['description'],
+                            photo: success,
+                            analyticts: {
+                                likes_count: result[0]['likes_count'],
+                                views_count: result[0]['views_count'],
+                                shares_count: result[0]['shares_count']
+                            },
+                            createdAt: result[0]['createdAt'],
+                            updatedAt: result[0]['updatedAt']
+                        });
+                        return res.status(200).send({
+                            message: final_result
+                        });
+                    }).catch((error) => {
+                        return res.status(500).send({
+                            message: error.message
+                        });
+                    });
+                }
+            });
+
+        }
+    });
+}
+exports.readByCategory = (req, res, next) => {
+    const data = new EventsModel({
+        "RWId": req.user.RWId,
+        "category": req.body.category
+    });
+    EventsModel.readByCategory(data, (error, result) => {
+        if (error) {
+            if (error.kind === "data_not_found") {
+                return res.status(404).send({
+                    message: 'not_found'
+                });
+            }
+            return res.status(500).send({
+                message: error
+            });
+        } else {
+            var final_result = [];
+            for (let index = 0; index < result.length; index++) {
+                let file_path = result[index]['photo'];
+                helper.getUrl(file_path).then((success) => {
+                    final_result.push({
+                        _id: result[index]['_id'],
+                        event_name: result[index]['event_name'],
+                        category: result[index]['category'],
+                        description: result[index]['description'],
+                        photo: success,
+                        analyticts: {
+                            likes_count: result[index]['likes_count'],
+                            views_count: result[index]['views_count'],
+                            shares_count: result[index]['shares_count']
+                        },
+                        createdAt: result[index]['createdAt'],
+                        updatedAt: result[index]['updatedAt']
+                    });
+                    if (index == result.length - 1) {
+                        return res.status(200).send({
+                            message: final_result
+                        });
+                    }
+                }).catch((error) => {
+                    return res.status(500).send({
+                        message: error
+                    });
+                });
+            }
+        }
+    });
+}
+exports.readByMonth = (req, res, next) => {
+    const data = {
+        "month": req.params.month
+    }
+    EventsModel.readByMont(data, (error, result) => {
+        if (error) {
+            if (error.kind === "data_not_found") {
+                return res.status(404).send({
+                    message: 'not_found'
+                });
+            }
+            return res.status(500).send({
+                message: error
+            });
+        } else {
+            let file_path = result[0]['photo'];
+            var final_result = [];
+            helper.getUrl(file_path).then((success) => {
+                final_result.push({
+                    _id: result[0]['_id'],
+                    event_name: result[0]['event_name'],
+                    category: result[0]['category'],
+                    description: result[0]['description'],
+                    photo: success,
+                    analyticts: {
+                        likes_count: result[0]['likes_count'],
+                        views_count: result[0]['views_count'],
+                        shares_count: result[0]['shares_count']
+                    },
+                    createdAt: result[0]['createdAt'],
+                    updatedAt: result[0]['updatedAt']
+                });
+                return res.status(200).send({
+                    message: final_result
+                });
+            }).catch((error) => {
+                return res.status(500).send({
+                    message: error.message
+                });
+            });
         }
     });
 }
@@ -109,30 +253,30 @@ exports.searchEvent = (req, res, next) => {
                 message: error
             });
         } else {
-            return res.status(200).send({
-                message: result
-            });
-        }
-    });
-}
-exports.readByCategory = (req, res, next) => {
-    const data = new EventsModel({
-        "RWId": req.user.RWId,
-        "category": req.body.category
-    });
-    EventsModel.readByCategory(data, (error, result) => {
-        if (error) {
-            if (error.kind === "data_not_found") {
-                return res.status(404).send({
-                    message: 'not_found'
+            let file_path = result[0]['photo'];
+            var final_result = [];
+            helper.getUrl(file_path).then((success) => {
+                final_result.push({
+                    _id: result[0]['_id'],
+                    event_name: result[0]['event_name'],
+                    category: result[0]['category'],
+                    description: result[0]['description'],
+                    photo: success,
+                    analyticts: {
+                        likes_count: result[0]['likes_count'],
+                        views_count: result[0]['views_count'],
+                        shares_count: result[0]['shares_count']
+                    },
+                    createdAt: result[0]['createdAt'],
+                    updatedAt: result[0]['updatedAt']
                 });
-            }
-            return res.status(500).send({
-                message: error
-            });
-        } else {
-            return res.status(200).send({
-                message: result
+                return res.status(200).send({
+                    message: final_result
+                });
+            }).catch((error) => {
+                return res.status(500).send({
+                    message: error.message
+                });
             });
         }
     });
@@ -191,45 +335,6 @@ exports.add_share = (req, res, next) => {
             });
         }
     })
-}
-exports.readById = (req, res, next) => {
-    EventsModel.readById(req.params.id, (error, result) => {
-        if (error) {
-            return res.status(500).send({
-                message: error
-            });
-        } else {
-            AnalytictsModel.add_view(req.params.id, (error, result2) => {
-                if (error) {
-                    return res.status(500).send({
-                        message: error
-                    });
-                } else {
-                    let file_path = result[0]['photo'];
-                    var final_result = [];
-                    helper.getUrl(file_path).then((success) => {
-                        final_result.push({
-                            _id: result[0]['_id'],
-                            event_name: result[0]['event_name'],
-                            category: result[0]['category'],
-                            description: result[0]['description'],
-                            photo: success,
-                            createdAt: result[0]['createdAt'],
-                            updatedAt: result[0]['updatedAt']
-                        });
-                        return res.status(200).send({
-                            message: final_result
-                        });
-                    }).catch((error) => {
-                        return res.status(500).send({
-                            message: error
-                        });
-                    });
-                }
-            });
-
-        }
-    });
 }
 exports.update = (req, res, next) => {
     const _id = req.params.id;

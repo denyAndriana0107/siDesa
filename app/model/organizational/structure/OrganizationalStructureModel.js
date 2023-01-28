@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo");
+const client = require("../../../config/db/Mongo-dev");
 class StructureModel {
     constructor(params) {
         this._id = params._id,
@@ -14,9 +14,29 @@ class StructureModel {
             const query = {
                 "RWId": RWId
             };
-            const cursor = await db.find(query);
+            const cursor = db.find(query);
             const allValues = await cursor.toArray();
 
+            if (allValues.length > 0) {
+                return result(null, allValues);
+            } else {
+                return result({ kind: "not_found" });
+            }
+        } catch (error) {
+            return result(error.message);
+        } finally {
+            await client.close();
+        }
+    }
+    static async readById(data, result) {
+        try {
+            const db = await connection();
+            const query = {
+                "RWId": data.RWId,
+                "_id": ObjectId(data._id)
+            };
+            const cursor = db.find(query);
+            const allValues = await cursor.toArray();
             if (allValues.length > 0) {
                 return result(null, allValues);
             } else {
@@ -50,31 +70,47 @@ class StructureModel {
             await client.close();
         }
     }
-    static async add_person(data, result) {
+    static async update(data, result) {
         try {
             const db = await connection();
             const filter = {
+                "RWId": data.RWId,
                 "_id": ObjectId(data._id)
-            };
-            const cursor = db.find(filter);
-            const allValues = await cursor.toArray();
-            if (allValues.length > 0) {
-                var old_doc = [];
-                for (let index = 0; index < allValues[0]['person'].length; index++) {
-                    old_doc.push(allValues[0]['person'][index]);
+            }
+            const doc = {
+                $set: {
+                    "person": [
+                        {
+                            "name": data.name,
+                            "photo": data.photo
+                        }
+                    ],
+                    "jobs": data.jobs,
                 }
-                var new_doc = [];
-                new_doc.push(old_doc);
-                new_doc.push({
-                    name: data.name,
-                    photo: data.photo
-                });
-                const doc = {
-                    $set: {
-                        person: new_doc
-                    }
-                };
-                const final_result = await db.updateOne(filter, doc);
+            }
+
+            const final_result = await db.updateOne(filter, doc);
+            if (final_result.modifiedCount == 1) {
+                return result(null);
+            } else {
+                return result({ kind: "not_found" });
+            }
+
+        } catch (error) {
+            return result(error.message);
+        } finally {
+            await client.close();
+        }
+    }
+    static async delete(data, result) {
+        try {
+            const db = await connection();
+            const filter = {
+                "RWId": data.RWId,
+                "_id": ObjectId(data._id)
+            }
+            const final_result = await db.deleteOne(filter);
+            if (final_result.deletedCount == 1) {
                 return result(null);
             } else {
                 return result({ kind: "not_found" });

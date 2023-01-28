@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo");
+const client = require("../../../config/db/Mongo-dev");
 const bycrypts = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const helper = require("../../../helper/otp/OTP");
@@ -200,8 +200,6 @@ class AuthModel {
             return result(null, final_result);
         } catch (error) {
             return result(error);
-        } finally {
-            await client.close();
         }
     }
 }

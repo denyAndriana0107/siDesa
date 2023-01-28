@@ -1,6 +1,7 @@
 const AuthModel = require("../../model/auth/auth_users/AuthModel");
 const OTP = require("../../model/auth/otp/AuthModel");
 const OTPModel = require("../../model/auth/otp/AuthModel");
+const ProfileModel = require("../../model/users/UsersModel");
 const TokenFCM = require("../../model/auth/token/TokenModel");
 
 const { sendMessage, getTextMessageInput } = require("../../helper/WhatsApp/WhatsApp");
@@ -73,34 +74,47 @@ exports.signIn2 = (req, res, next) => {
                             });
                         }
                     } else {
-                        AuthModel.signIn(data, (error, result3) => {
+                        const data_user_profile = new ProfileModel({
+                            "name": 'user_unknown',
+                            "photo": "default.jpg",
+                            "auth_users_id": data._id
+                        });
+                        ProfileModel.insert(data_user_profile, (error, resultProfile) => {
                             if (error) {
                                 return res.status(500).send({
-                                    message: "error database"
-                                })
-                            } else {
-                                const otp_data = new OTPModel({
-                                    "auth_users_id": data._id
+                                    message: error
                                 });
-                                OTPModel.insert(otp_data, (error, result4) => {
+                            } else {
+                                AuthModel.signIn(data, (error, result3) => {
                                     if (error) {
                                         return res.status(500).send({
-                                            message: error + "otp"
-                                        });
+                                            message: "error database"
+                                        })
                                     } else {
-                                        var phone_split = data.phone;
-                                        var RECIPIENT_WAID = "62" + phone_split;
-                                        var otp_result = result3['otp'];
-                                        var data_message = getTextMessageInput(RECIPIENT_WAID, `Warga !!.Terima kasih telah mendaftarkan nomor ponsel diaplikasi kami. Berikut kode verikifikasi akun anda : *${otp_result}*`);
-                                        sendMessage(data_message).then((response) => {
-                                            return res.status(200).send({
-                                                message: result3["token"],
-                                                role: result3["role"][0]["auth_users_group"]["role"]
-                                            });
-                                        }).catch((error) => {
-                                            return res.status(500).send({
-                                                message: error.response.data
-                                            });
+                                        const otp_data = new OTPModel({
+                                            "auth_users_id": data._id
+                                        });
+                                        OTPModel.insert(otp_data, (error, result4) => {
+                                            if (error) {
+                                                return res.status(500).send({
+                                                    message: error + "otp"
+                                                });
+                                            } else {
+                                                var phone_split = data.phone;
+                                                var RECIPIENT_WAID = "62" + phone_split;
+                                                var otp_result = result3['otp'];
+                                                var data_message = getTextMessageInput(RECIPIENT_WAID, `Warga !!.Terima kasih telah mendaftarkan nomor ponsel diaplikasi kami. Berikut kode verikifikasi akun anda : *${otp_result}*`);
+                                                sendMessage(data_message).then((response) => {
+                                                    return res.status(200).send({
+                                                        message: result3["token"],
+                                                        role: result3["role"][0]["auth_users_group"]["role"]
+                                                    });
+                                                }).catch((error) => {
+                                                    return res.status(500).send({
+                                                        message: error.response.data
+                                                    });
+                                                });
+                                            }
                                         });
                                     }
                                 });
