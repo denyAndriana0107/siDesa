@@ -58,7 +58,6 @@ class ProfileModel {
             const query = {
                 "RWId": data.RWId
             };
-            console.log(query);
             const doc = {
                 $set: {
                     name: data.name,

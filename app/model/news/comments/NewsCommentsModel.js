@@ -57,19 +57,6 @@ class NewsCommentsmodel {
                     }
                 },
                 {
-                    "$project": {
-                        "news_comments._id": "$news_comments._id",
-                        "news_comments.auth_users_id": "$news_comments.auth_users_id",
-                        "news_comments.newsId": "$news_comments.newsId",
-                        "news_comments.text": "$news_comments.text",
-                        "news_comments.createdAt": "$news_comments.createdAt",
-                        "news_comments.updatedAt": "$news_comments.updatedAt",
-                        "users_profile.name": "$users_profile.name",
-                        "users_profile.photo": "$users_profile.photo",
-                        "_id": 0
-                    }
-                },
-                {
                     "$match": {
                         "news_comments.newsId": ObjectId(id_news)
                     }
@@ -77,7 +64,7 @@ class NewsCommentsmodel {
             ];
             const cursor = db.aggregate(pipeline, options).sort(sort).limit(limit);
             const allValues = await cursor.toArray();
-
+            console.log(allValues);
             var array_data = [];
             array_data = allValues;
             if (array_data.length > 0) {

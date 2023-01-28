@@ -96,7 +96,7 @@ class NewsModel {
 
             const cursor = collection.aggregate(pipeline, options);
             const allValues = await cursor.toArray();
-            console.log(allValues);
+
             var array_data = [];
             array_data = allValues;
             if (array_data.length > 0) {
@@ -147,7 +147,6 @@ class NewsModel {
             ];
             const cursor = collection.aggregate(pipeline, options);
             const allValues = await cursor.toArray();
-
             var array_data = [];
             array_data = allValues;
             if (array_data.length > 0) {
