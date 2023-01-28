@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const client = require("../../../config/db/Mongo");
+const client = require("../../../config/db/Mongo-dev");
 
 class NewsAnalyticsModel {
     constructor(params) {

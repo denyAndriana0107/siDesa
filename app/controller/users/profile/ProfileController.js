@@ -11,13 +11,13 @@ exports.read = (req, res, next) => {
                 });
             }
             return res.status(500).send({
-                message: error
+                message: error.message
             });
         } else {
             OrganizationalProfile.read(req.user.RWId, (error, result2) => {
                 if (error) {
                     return res.status(500).send({
-                        message: error
+                        message: error.message
                     });
                 } else {
                     let file_path = result[0]['users_profile']['photo'];
@@ -28,7 +28,7 @@ exports.read = (req, res, next) => {
                             name: result[0]['users_profile']['name'],
                             phone: result[0]['auth_users']['phone'],
                             photo: data,
-                            address: result2[0]['auth_users']['address'],
+                            address: result2[0]['address'],
 
                         });
                         return res.status(200).send({
@@ -36,7 +36,7 @@ exports.read = (req, res, next) => {
                         });
                     }).catch((error) => {
                         return res.status(500).send({
-                            message: error
+                            message: error.message
                         });
                     });
                 }
