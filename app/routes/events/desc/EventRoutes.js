@@ -19,9 +19,10 @@ module.exports = app => {
     router.get('/event/:id', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.readById);
     router.get('/event/analyticts/:id', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.readAnalytits);
     router.get('/event/searchByMonth/:month', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.readByMonth)
+
     router.post('/event/category', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.readByCategory);
     router.post('/event/search', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.searchEvent);
-    router.post('/event/insert', multer.single('file'), file_middlewares.isImage, auth_middleware.isLoggedIn, auth_middleware.isValidated, file_middlewares.isImage, permission_middlewares.isAdminRW, dao.insert);
+    router.post('/event/insert', multer.single('file'), file_middlewares.isImage, auth_middleware.isLoggedIn, auth_middleware.isValidated, permission_middlewares.isAdminRW, dao.insert);
     router.post('/event/add_like/:id', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.add_like);
     router.post('/event/add_share/:id', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.add_share);
 

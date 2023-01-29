@@ -19,7 +19,7 @@ module.exports = app => {
 
     router.get('/organizational/structure', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.read);
     router.get('/organizational/structure/:id', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.readById);
-    router.post('/organizational/structure', multer.single('file'), auth_middleware.isLoggedIn, auth_middleware.isValidated, permission_middlewarer.isAdminRW, file_middleware.isImage, dao.insert);
+    router.post('/organizational/structure', multer.single('file'), auth_middleware.isLoggedIn, file_middleware.isImage, auth_middleware.isValidated, permission_middlewarer.isAdminRW, dao.insert);
     router.put('/organizational/structure/update/:id', multer.single('file'), auth_middleware.isLoggedIn, auth_middleware.isValidated, permission_middlewarer.isAdminRW, dao.update);
     router.delete('/organizational/structure/delete/:id', auth_middleware.isLoggedIn, auth_middleware.isValidated, permission_middlewarer.isAdminRW, dao.delete);
     app.use('/api/', router);
