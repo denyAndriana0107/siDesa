@@ -26,7 +26,7 @@ module.exports = app => {
     router.post('/event/add_like/:id', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.add_like);
     router.post('/event/add_share/:id', auth_middleware.isLoggedIn, auth_middleware.isValidated, dao.add_share);
 
-    router.put('/event/update/:id', multer.single('file'), file_middlewares.isImage, auth_middleware.isLoggedIn, auth_middleware.isValidated, permission_middlewares.isAdminRW, dao.update);
+    router.put('/event/update/:id', multer.single('file'), auth_middleware.isLoggedIn, auth_middleware.isValidated, permission_middlewares.isAdminRW, dao.update);
     router.delete('/event/delete/:id', auth_middleware.isLoggedIn, permission_middlewares.isAdminRW, auth_middleware.isValidated, dao.delete);
     app.use('/api/', router);
 }
