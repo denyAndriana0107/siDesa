@@ -339,7 +339,7 @@ exports.deleteNews = (req, res, next) => {
                         message: error
                     });
                 } else {
-                    let file_path = result[0]['photo'];
+                    let file_path = result[0]['news']['photo'];
                     helper.delete(file_path).then((success) => {
                         NewsModel.delete(_id, (error, result) => {
                             if (error) {

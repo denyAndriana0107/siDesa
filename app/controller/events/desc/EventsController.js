@@ -49,6 +49,11 @@ exports.insert = (req, res, next) => {
 exports.read = (req, res, next) => {
     EventsModel.read(req.user.RWId, (error, result) => {
         if (error) {
+            if (error.kind === "not_found") {
+                return res.status(404).send({
+                    message: 'not_found'
+                });
+            }
             return res.status(500).send({
                 message: error
             });
@@ -99,7 +104,7 @@ exports.readById = (req, res, next) => {
             AnalytictsModel.add_view(req.params.id, (error, result2) => {
                 if (error) {
                     return res.status(500).send({
-                        message: error + "oi"
+                        message: error
                     });
                 } else {
                     let file_path = result[0]['events']['photo'];
@@ -395,18 +400,22 @@ exports.update = (req, res, next) => {
     }
 }
 exports.delete = (req, res, next) => {
-    EventsModel.readById(req.params.id, (error, result) => {
+    const data = new EventsModel({
+        "RWId": req.user.RWId,
+        "_id": req.params.id
+    });
+    EventsModel.readById(data, (error, result) => {
         if (error) {
             return res.status(404).send({
                 message: 'not_found'
             });
         } else {
-            helper.delete(result[0]['photo']).then((success) => {
+            helper.delete(result[0]['events']['photo']).then((success) => {
                 EventsModel.delete(req.params.id, (error, result) => {
                     if (error) {
                         if (error.kind === "not_found") {
                             return res.status(404).send({
-                                message: 'not_found'
+                                message: 'not_found2'
                             });
                         }
                         return res.status(500).send({
@@ -417,7 +426,7 @@ exports.delete = (req, res, next) => {
                             if (error) {
                                 if (error.kind === "not_found") {
                                     return res.status(404).send({
-                                        message: 'not_found'
+                                        message: 'not_found3'
                                     });
                                 }
                             } else {
